@@ -1,91 +1,14 @@
-# Bun TypeScript Project Rules
-
-## Project Overview
-
-- **Purpose**: Bun TypeScript starter project
-- **Language**: TypeScript
-- **Runtime**: Bun (JavaScript/TypeScript runtime alternative to Node.js)
-- **Main Features**: Fast startup, built-in bundler, native TypeScript support
-
-## Bun-Specific Rules
-
-Default to using Bun instead of Node.js.
-
-- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
-- Use `bun test` instead of `jest` or `vitest`
-- Use `bun build <file.html|file.ts|file.css>` instead of `webpack` or `esbuild`
-- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
-- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
-- Bun automatically loads .env, so don't use dotenv.
-
-### Bun APIs
-
-- `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
-- `bun:sqlite` for SQLite. Don't use `better-sqlite3`.
-- `Bun.redis` for Redis. Don't use `ioredis`.
-- `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
-- `WebSocket` is built-in. Don't use `ws`.
-- Prefer `Bun.file` over `node:fs`'s readFile/writeFile
-- Bun.$`ls` instead of execa.
-
-### Testing with Bun
-
-Use `bun test` to run tests.
-
-```ts
-import { test, expect } from "bun:test";
-
-test("hello world", () => {
-	expect(1).toBe(1);
-});
-```
-
-### Frontend Development
-
-Use HTML imports with `Bun.serve()`. Don't use `vite`. HTML imports fully support React, CSS, Tailwind.
-
-Server example:
-
-```ts
-import index from "./index.html";
-
-Bun.serve({
-	routes: {
-		"/": index,
-		"/api/users/:id": {
-			GET: (req) => {
-				return new Response(JSON.stringify({ id: req.params.id }));
-			},
-		},
-	},
-	websocket: {
-		open: (ws) => {
-			ws.send("Hello, world!");
-		},
-		message: (ws, message) => {
-			ws.send(message);
-		},
-		close: (ws) => {
-			// handle close
-		},
-	},
-	development: {
-		hmr: true,
-		console: true,
-	},
-});
-```
-
 ## TypeScript コーディングルール
 
 ### 基本原則
 
 - 型定義は interface ではなく、type を使用する
 - for よりも map などの関数型メソッドを優先して使用する
-- let は一切使わず、const を使用
+- let は一切使わず、const を使用する
 - 外部で使われていない場合は export しない
 - 使用していない import や変数は削除
 - class は一切使わない
+- 関数やコンポーネントは小さく作る
 
 ### インポート・エクスポート
 
@@ -99,12 +22,6 @@ Bun.serve({
 - オプショナル型は `?:` を使用
 - Union types で状態を明確に表現
 - 配列アクセス時は bounds check を実装
-
-### エラーハンドリング
-
-- Promise ベースの処理では適切な catch を実装
-- 型ガードを使用して実行時型チェックを行う
-- Error 型を継承したカスタムエラークラスを定義
 
 ## 一般的なコーディングプラクティス
 
@@ -137,32 +54,15 @@ Bun.serve({
 - 不要になったファイルは消す
 - 先を見越して過剰な method を先に定義しない
 
-## 実装パターン
-
-### 値オブジェクト
-
-- 不変
-- 値に基づく同一性
-- 自己検証
-- ドメイン操作を持つ
-
-### エンティティ
-
-- ID に基づく同一性
-- 制御された更新
-- 整合性ルールを持つ
-
-### リポジトリ
-
-- ドメインモデルのみを扱う
-- 永続化の詳細を隠蔽
-- テスト用のインメモリ実装を提供
-
 ## ディレクトリ構成
 
 ### Package by Feature
 
 機能単位でコードを整理し、関連するファイルをすべて同じフォルダにまとめる構造。
+コンポーネント・hooks・サービス・型・テストなどを技術単位でディレクトリを分けるのではなく、機能単位でまとめることで、必要なファイルを一箇所で把握しやすくなる。
+各 feature ディレクトリの内部でも package by feature の原則を適用する。
+無理にディレクトリで分類する必要はなくフラットに配置すれば良い。7 個以上のファイルがある場合は、サブディレクトリを作成しても良い。
+copoments, types, repositories といった技術を表すディレクトリは作らないでください. shard, utils なども原則作らない.
 
 ```
 src/
@@ -195,7 +95,7 @@ src/
 
 ```bash
 # 新機能の追加
-feat: Result型によるエラー処理の導入
+feat: よるエラー処理の導入
 
 # 既存機能の改善
 update: キャッシュ機能のパフォーマンス改善
@@ -207,7 +107,7 @@ fix: 認証トークンの期限切れ処理を修正
 refactor: Adapterパターンを使用して外部依存を抽象化
 
 # テスト追加
-test: Result型のエラーケースのテストを追加
+test: エラーケースのテストを追加
 
 # ドキュメント更新
 docs: エラー処理のベストプラクティスを追加
