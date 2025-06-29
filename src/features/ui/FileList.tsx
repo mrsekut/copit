@@ -5,6 +5,7 @@ import TextInput from 'ink-text-input';
 import Fuse from 'fuse.js';
 import { useAppStore } from '../store/app';
 import { fetchRepositoryContents } from '../github/api';
+import { downloadAndSaveFile } from '../download/download';
 import type { FileItem } from '../github/api';
 
 export const FileList: React.FC = () => {
@@ -14,6 +15,7 @@ export const FileList: React.FC = () => {
     searchQuery,
     isLoading,
     error,
+    selectedFile,
     setFiles,
     setSearchQuery,
     selectFile,
@@ -24,11 +26,32 @@ export const FileList: React.FC = () => {
 
   const [filteredFiles, setFilteredFiles] = useState<FileItem[]>([]);
   const [currentPath, setCurrentPath] = useState<string>('');
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadStatus, setDownloadStatus] = useState<string>('');
 
-  useInput((input, key) => {
+  useInput(async (input, key) => {
     if (key.escape) {
       setView('repositories');
       setSearchQuery('');
+      selectFile(null);
+    }
+    
+    if (key.return && selectedFile && selectedFile.downloadUrl) {
+      setIsDownloading(true);
+      setDownloadStatus(`Downloading ${selectedFile.name}...`);
+      
+      try {
+        await downloadAndSaveFile(selectedFile.downloadUrl, selectedFile.path);
+        setDownloadStatus(`✅ Downloaded: ${selectedFile.path}`);
+        setTimeout(() => {
+          setDownloadStatus('');
+          selectFile(null);
+        }, 2000);
+      } catch (err) {
+        setDownloadStatus(`❌ Failed to download: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      } finally {
+        setIsDownloading(false);
+      }
     }
   });
 
@@ -132,6 +155,16 @@ export const FileList: React.FC = () => {
         <SelectInput items={allItems} onSelect={handleSelect} />
       ) : (
         <Text dimColor>No files found</Text>
+      )}
+      {downloadStatus && (
+        <Box marginTop={1}>
+          <Text>{downloadStatus}</Text>
+        </Box>
+      )}
+      {isDownloading && (
+        <Box marginTop={1}>
+          <Text color="yellow">Downloading...</Text>
+        </Box>
       )}
     </Box>
   );
