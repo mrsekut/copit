@@ -14,15 +14,19 @@ export const App: React.FC = () => {
   const [, setUsername] = useAtom(usernameAtom);
   const [, setAuthToken] = useAtom(authTokenAtom);
   const [authError, setAuthError] = useState<string>('');
+  const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
       const authResult = await getStoredAuth();
+      
       if (authResult) {
         setIsAuthenticated(true);
         setUsername(authResult.username);
         setAuthToken(authResult.token);
       }
+      
+      setIsInitializing(false);
     };
 
     checkAuth();
@@ -43,6 +47,15 @@ export const App: React.FC = () => {
       process.exit(0);
     }
   });
+
+
+  if (isInitializing) {
+    return (
+      <Box flexDirection="column" padding={1}>
+        <Text>Loading...</Text>
+      </Box>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
