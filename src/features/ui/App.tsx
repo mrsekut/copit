@@ -26,7 +26,8 @@ export const App: React.FC = () => {
       </Box>
       <Box marginTop={1}>
         <Text dimColor>
-          [↑/↓] Navigate [Enter] Select [Esc] {view === 'repositories' ? 'Exit' : 'Back'}
+          [↑/↓] Navigate [Enter] Select [Esc]{' '}
+          {view === 'repositories' ? 'Exit' : 'Back'}
         </Text>
       </Box>
       {selectedFile && (

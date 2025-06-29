@@ -35,11 +35,11 @@ export const FileList: React.FC = () => {
       setSearchQuery('');
       selectFile(null);
     }
-    
+
     if (key.return && selectedFile && selectedFile.downloadUrl) {
       setIsDownloading(true);
       setDownloadStatus(`Downloading ${selectedFile.name}...`);
-      
+
       try {
         await downloadAndSaveFile(selectedFile.downloadUrl, selectedFile.path);
         setDownloadStatus(`✅ Downloaded: ${selectedFile.path}`);
@@ -48,7 +48,9 @@ export const FileList: React.FC = () => {
           selectFile(null);
         }, 2000);
       } catch (err) {
-        setDownloadStatus(`❌ Failed to download: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        setDownloadStatus(
+          `❌ Failed to download: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        );
       } finally {
         setIsDownloading(false);
       }
@@ -76,8 +78,8 @@ export const FileList: React.FC = () => {
   }, [selectedRepository, currentPath, setFiles, setLoading, setError]);
 
   useEffect(() => {
-    const fileItems = files.filter((item) => item.type === 'file');
-    
+    const fileItems = files.filter(item => item.type === 'file');
+
     if (searchQuery.trim() === '') {
       setFilteredFiles(fileItems);
     } else {
@@ -86,12 +88,12 @@ export const FileList: React.FC = () => {
         threshold: 0.3,
       });
       const results = fuse.search(searchQuery);
-      setFilteredFiles(results.map((result) => result.item));
+      setFilteredFiles(results.map(result => result.item));
     }
   }, [searchQuery, files]);
 
   const handleSelect = (item: { value: string }) => {
-    const file = files.find((f) => f.path === item.value);
+    const file = files.find(f => f.path === item.value);
     if (file) {
       if (file.type === 'dir') {
         setCurrentPath(file.path);
@@ -123,13 +125,13 @@ export const FileList: React.FC = () => {
   }
 
   const dirItems = files
-    .filter((item) => item.type === 'dir')
-    .map((dir) => ({
+    .filter(item => item.type === 'dir')
+    .map(dir => ({
       label: `📁 ${dir.name}`,
       value: dir.path,
     }));
 
-  const fileItems = filteredFiles.map((file) => ({
+  const fileItems = filteredFiles.map(file => ({
     label: `📄 ${file.name}`,
     value: file.path,
   }));

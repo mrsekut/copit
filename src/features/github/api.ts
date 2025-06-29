@@ -27,7 +27,7 @@ export const fetchUserRepositories = async (
     sort: 'updated',
   });
 
-  return data.map((repo) => ({
+  return data.map(repo => ({
     id: repo.id,
     name: repo.name,
     fullName: repo.full_name,
@@ -51,7 +51,7 @@ export const fetchRepositoryContents = async (
     return [];
   }
 
-  return data.map((item) => ({
+  return data.map(item => ({
     name: item.name,
     path: item.path,
     type: item.type as 'file' | 'dir',

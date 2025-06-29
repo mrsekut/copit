@@ -32,7 +32,9 @@ export const RepositoryList: React.FC = () => {
         const repos = await fetchUserRepositories(username);
         setRepositories(repos);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load repositories');
+        setError(
+          err instanceof Error ? err.message : 'Failed to load repositories',
+        );
       } finally {
         setLoading(false);
       }
@@ -50,12 +52,12 @@ export const RepositoryList: React.FC = () => {
         threshold: 0.3,
       });
       const results = fuse.search(searchQuery);
-      setFilteredRepos(results.map((result) => result.item));
+      setFilteredRepos(results.map(result => result.item));
     }
   }, [searchQuery, repositories]);
 
   const handleSelect = (item: { value: string }) => {
-    const repo = repositories.find((r) => r.fullName === item.value);
+    const repo = repositories.find(r => r.fullName === item.value);
     if (repo) {
       selectRepository(repo);
       setView('files');
@@ -78,7 +80,7 @@ export const RepositoryList: React.FC = () => {
     );
   }
 
-  const items = filteredRepos.map((repo) => ({
+  const items = filteredRepos.map(repo => ({
     label: `${repo.name}${repo.description ? ` - ${repo.description}` : ''}`,
     value: repo.fullName,
   }));

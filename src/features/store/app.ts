@@ -27,7 +27,7 @@ type AppActions = {
   setError: (error: string | null) => void;
 };
 
-export const useAppStore = create<AppState & AppActions>((set) => ({
+export const useAppStore = create<AppState & AppActions>(set => ({
   view: 'repositories',
   username: 'mrsekut',
   repositories: [],
@@ -38,13 +38,13 @@ export const useAppStore = create<AppState & AppActions>((set) => ({
   isLoading: false,
   error: null,
 
-  setView: (view) => set({ view }),
-  setUsername: (username) => set({ username }),
-  setRepositories: (repositories) => set({ repositories }),
-  selectRepository: (repository) => set({ selectedRepository: repository }),
-  setFiles: (files) => set({ files }),
-  selectFile: (file) => set({ selectedFile: file }),
-  setSearchQuery: (searchQuery) => set({ searchQuery }),
-  setLoading: (isLoading) => set({ isLoading }),
-  setError: (error) => set({ error }),
+  setView: view => set({ view }),
+  setUsername: username => set({ username }),
+  setRepositories: repositories => set({ repositories }),
+  selectRepository: repository => set({ selectedRepository: repository }),
+  setFiles: files => set({ files }),
+  selectFile: file => set({ selectedFile: file }),
+  setSearchQuery: searchQuery => set({ searchQuery }),
+  setLoading: isLoading => set({ isLoading }),
+  setError: error => set({ error }),
 }));
