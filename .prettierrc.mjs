@@ -2,8 +2,8 @@
  * @type {import('prettier').Options}
  */
 export default {
-  arrowParens: "avoid",
+  arrowParens: 'avoid',
   semi: true,
-  trailingComma: "all",
-  singleQuote: true
-}
+  trailingComma: 'all',
+  singleQuote: true,
+};

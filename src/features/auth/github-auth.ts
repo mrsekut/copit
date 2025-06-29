@@ -20,7 +20,7 @@ export const authenticateWithGitHub = async (
   const auth = createOAuthDeviceAuth({
     clientType: 'oauth-app',
     clientId: CLIENT_ID,
-    onVerification: (data) => {
+    onVerification: data => {
       onVerification({
         userCode: data.user_code,
         verificationUri: data.verification_uri,

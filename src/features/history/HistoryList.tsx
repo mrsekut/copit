@@ -11,7 +11,7 @@ import { downloadAndSaveFile } from '../download/download';
 export const HistoryList: React.FC = () => {
   const [, setView] = useAtom(viewAtom);
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
-  
+
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [filteredHistory, setFilteredHistory] = useState<HistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -65,19 +65,21 @@ export const HistoryList: React.FC = () => {
       await downloadAndSaveFile(
         historyItem.downloadUrl,
         historyItem.filePath,
-        historyItem.repositoryName
+        historyItem.repositoryName,
       );
       setDownloadStatus(`✅ Downloaded: ${historyItem.filePath}`);
-      
+
       // 履歴を再読み込み（順序が更新される）
       const updatedHistory = await loadHistory();
       setHistory(updatedHistory);
-      
+
       setTimeout(() => {
         setDownloadStatus('');
       }, 2000);
     } catch (error) {
-      setDownloadStatus(`❌ Failed to download: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      setDownloadStatus(
+        `❌ Failed to download: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     } finally {
       setIsDownloading(false);
     }
@@ -105,26 +107,29 @@ export const HistoryList: React.FC = () => {
     <Box flexDirection="column">
       <Box marginBottom={1} flexDirection="row" justifyContent="space-between">
         <Box>
-          <Text bold color="cyan">📋 Download History</Text>
+          <Text bold color="cyan">
+            📋 Download History
+          </Text>
         </Box>
         <Box>
           <Text dimColor>[Tab] </Text>
           <Text>📁 Browse Files</Text>
         </Box>
       </Box>
-      
+
       <Box marginBottom={1}>
         <Text>Search: </Text>
         <TextInput value={searchQuery} onChange={setSearchQuery} />
       </Box>
-      
+
       {limitedItems.length > 0 ? (
         <>
           <SelectInput items={limitedItems} onSelect={handleSelect} />
           {hasMore && searchQuery.trim() === '' && (
             <Box marginTop={1}>
               <Text dimColor>
-                ... and {items.length - MAX_VISIBLE_ITEMS} more files. Type to search.
+                ... and {items.length - MAX_VISIBLE_ITEMS} more files. Type to
+                search.
               </Text>
             </Box>
           )}
@@ -135,13 +140,13 @@ export const HistoryList: React.FC = () => {
           <Text dimColor>Download some files to see them here!</Text>
         </Box>
       )}
-      
+
       {downloadStatus && (
         <Box marginTop={1}>
           <Text>{downloadStatus}</Text>
         </Box>
       )}
-      
+
       {isDownloading && (
         <Box marginTop={1}>
           <Text color="yellow">Downloading...</Text>

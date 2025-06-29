@@ -22,26 +22,36 @@ const ensureConfigDir = async (): Promise<void> => {
   }
 };
 
-export const addToHistory = async (item: Omit<HistoryItem, 'id' | 'downloadedAt'>): Promise<void> => {
+export const addToHistory = async (
+  item: Omit<HistoryItem, 'id' | 'downloadedAt'>,
+): Promise<void> => {
   await ensureConfigDir();
-  
+
   const history = await loadHistory();
-  
+
   // 同じファイルが既に履歴にある場合は削除（重複を避ける）
   const filteredHistory = history.filter(
-    h => h.filePath !== item.filePath || h.repositoryName !== item.repositoryName
+    h =>
+      h.filePath !== item.filePath || h.repositoryName !== item.repositoryName,
   );
-  
+
   // 新しいアイテムを先頭に追加
   const newItem: HistoryItem = {
     ...item,
     id: generateId(),
     downloadedAt: new Date().toISOString(),
   };
-  
-  const updatedHistory = [newItem, ...filteredHistory].slice(0, MAX_HISTORY_ITEMS);
-  
-  await fs.writeFile(HISTORY_FILE, JSON.stringify(updatedHistory, null, 2), 'utf-8');
+
+  const updatedHistory = [newItem, ...filteredHistory].slice(
+    0,
+    MAX_HISTORY_ITEMS,
+  );
+
+  await fs.writeFile(
+    HISTORY_FILE,
+    JSON.stringify(updatedHistory, null, 2),
+    'utf-8',
+  );
 };
 
 export const loadHistory = async (): Promise<HistoryItem[]> => {

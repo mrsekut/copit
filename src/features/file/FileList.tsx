@@ -84,7 +84,7 @@ export const FileList: React.FC = () => {
         await downloadAndSaveFile(
           file.downloadUrl,
           file.path,
-          selectedRepository?.fullName || 'unknown'
+          selectedRepository?.fullName || 'unknown',
         );
         setDownloadStatus(`✅ Downloaded: ${file.path}`);
         setTimeout(() => {
@@ -146,7 +146,8 @@ export const FileList: React.FC = () => {
           {hasMore && searchQuery.trim() === '' && (
             <Box marginTop={1}>
               <Text dimColor>
-                ... and {items.length - MAX_VISIBLE_ITEMS} more files. Type to search.
+                ... and {items.length - MAX_VISIBLE_ITEMS} more files. Type to
+                search.
               </Text>
             </Box>
           )}

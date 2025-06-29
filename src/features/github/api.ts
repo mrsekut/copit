@@ -16,12 +16,14 @@ export type FileItem = {
   downloadUrl?: string | null;
 };
 
-export const fetchUserRepositories = async (token: string): Promise<Repository[]> => {
-  const octokit = new Octokit({ 
-    auth: token, 
-    userAgent: 'github-file-fetcher' 
+export const fetchUserRepositories = async (
+  token: string,
+): Promise<Repository[]> => {
+  const octokit = new Octokit({
+    auth: token,
+    userAgent: 'github-file-fetcher',
   });
-  
+
   const { data } = await octokit.repos.listForAuthenticatedUser({
     per_page: 100,
     sort: 'updated',
@@ -43,11 +45,11 @@ export const fetchRepositoryContents = async (
   path: string,
   token: string,
 ): Promise<FileItem[]> => {
-  const octokit = new Octokit({ 
-    auth: token, 
-    userAgent: 'github-file-fetcher' 
+  const octokit = new Octokit({
+    auth: token,
+    userAgent: 'github-file-fetcher',
   });
-  
+
   const { data } = await octokit.repos.getContent({
     owner,
     repo,
@@ -75,16 +77,21 @@ export const fetchAllRepositoryFiles = async (
 ): Promise<FileItem[]> => {
   const items = await fetchRepositoryContents(owner, repo, path, token);
   const files: FileItem[] = [];
-  
+
   for (const item of items) {
     if (item.type === 'file') {
       files.push(item);
     } else if (item.type === 'dir') {
-      const subFiles = await fetchAllRepositoryFiles(owner, repo, token, item.path);
+      const subFiles = await fetchAllRepositoryFiles(
+        owner,
+        repo,
+        token,
+        item.path,
+      );
       files.push(...subFiles);
     }
   }
-  
+
   return files;
 };
 

@@ -40,7 +40,7 @@ export const RepositoryList: React.FC = () => {
   useEffect(() => {
     const loadRepositories = async () => {
       if (!authToken) return;
-      
+
       setLoading(true);
       setError(null);
       try {
@@ -110,7 +110,9 @@ export const RepositoryList: React.FC = () => {
     <Box flexDirection="column">
       <Box marginBottom={1} flexDirection="row" justifyContent="space-between">
         <Box>
-          <Text bold color="cyan">📁 Browse Files</Text>
+          <Text bold color="cyan">
+            📁 Browse Files
+          </Text>
         </Box>
         <Box>
           <Text dimColor>[Tab] </Text>
@@ -127,7 +129,8 @@ export const RepositoryList: React.FC = () => {
           {hasMore && searchQuery.trim() === '' && (
             <Box marginTop={1}>
               <Text dimColor>
-                ... and {items.length - MAX_VISIBLE_ITEMS} more repositories. Type to search.
+                ... and {items.length - MAX_VISIBLE_ITEMS} more repositories.
+                Type to search.
               </Text>
             </Box>
           )}
