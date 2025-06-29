@@ -13,7 +13,7 @@ import {
   selectedFileAtom,
   viewAtom,
 } from '../store/atoms';
-import { fetchRepositoryContents } from '../github/api';
+import { fetchAllRepositoryFiles } from '../github/api';
 import { downloadAndSaveFile } from '../download/download';
 import type { FileItem } from '../github/api';
 
@@ -27,7 +27,6 @@ export const FileList: React.FC = () => {
   const [, setView] = useAtom(viewAtom);
 
   const [filteredFiles, setFilteredFiles] = useState<FileItem[]>([]);
-  const [currentPath, setCurrentPath] = useState<string>('');
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadStatus, setDownloadStatus] = useState<string>('');
 
@@ -67,7 +66,7 @@ export const FileList: React.FC = () => {
       setError(null);
       try {
         const [owner, repo] = selectedRepository.fullName.split('/');
-        const items = await fetchRepositoryContents(owner, repo, currentPath);
+        const items = await fetchAllRepositoryFiles(owner, repo);
         setFiles(items);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load files');
@@ -77,15 +76,13 @@ export const FileList: React.FC = () => {
     };
 
     loadFiles();
-  }, [selectedRepository, currentPath, setFiles, setLoading, setError]);
+  }, [selectedRepository, setFiles, setLoading, setError]);
 
   useEffect(() => {
-    const fileItems = files.filter(item => item.type === 'file');
-
     if (searchQuery.trim() === '') {
-      setFilteredFiles(fileItems);
+      setFilteredFiles(files);
     } else {
-      const fuse = new Fuse(fileItems, {
+      const fuse = new Fuse(files, {
         keys: ['name', 'path'],
         threshold: 0.3,
       });
@@ -97,12 +94,7 @@ export const FileList: React.FC = () => {
   const handleSelect = (item: { value: string }) => {
     const file = files.find(f => f.path === item.value);
     if (file) {
-      if (file.type === 'dir') {
-        setCurrentPath(file.path);
-        setSearchQuery('');
-      } else {
-        selectFile(file);
-      }
+      selectFile(file);
     }
   };
 
@@ -126,47 +118,32 @@ export const FileList: React.FC = () => {
     );
   }
 
-  const dirItems = files
-    .filter(item => item.type === 'dir')
-    .map(dir => ({
-      label: `📁 ${dir.name}`,
-      value: dir.path,
-    }));
-
-  const fileItems = filteredFiles.map(file => ({
-    label: `📄 ${file.name}`,
+  const items = filteredFiles.map(file => ({
+    label: `📄 ${file.path}`,
     value: file.path,
   }));
 
-  const allItems = [...dirItems, ...fileItems];
-
   // 画面の高さを考慮して表示数を制限
   const MAX_VISIBLE_ITEMS = 10;
-  const limitedItems = allItems.slice(0, MAX_VISIBLE_ITEMS);
-  const hasMore = allItems.length > MAX_VISIBLE_ITEMS;
+  const limitedItems = items.slice(0, MAX_VISIBLE_ITEMS);
+  const hasMore = items.length > MAX_VISIBLE_ITEMS;
 
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
         <Text bold>{selectedRepository.fullName}</Text>
-        {currentPath && <Text dimColor> / {currentPath}</Text>}
       </Box>
       <Box marginBottom={1}>
         <Text>Search files: </Text>
         <TextInput value={searchQuery} onChange={setSearchQuery} />
       </Box>
-      {currentPath && (
-        <Box marginBottom={1}>
-          <Text dimColor>Press Esc to go back</Text>
-        </Box>
-      )}
       {limitedItems.length > 0 ? (
         <>
           <SelectInput items={limitedItems} onSelect={handleSelect} />
           {hasMore && searchQuery.trim() === '' && (
             <Box marginTop={1}>
               <Text dimColor>
-                ... and {allItems.length - MAX_VISIBLE_ITEMS} more items. Type to search files.
+                ... and {items.length - MAX_VISIBLE_ITEMS} more files. Type to search.
               </Text>
             </Box>
           )}

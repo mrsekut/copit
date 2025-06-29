@@ -60,6 +60,27 @@ export const fetchRepositoryContents = async (
   }));
 };
 
+export const fetchAllRepositoryFiles = async (
+  owner: string,
+  repo: string,
+  path: string = '',
+): Promise<FileItem[]> => {
+  const items = await fetchRepositoryContents(owner, repo, path);
+  const files: FileItem[] = [];
+  
+  for (const item of items) {
+    if (item.type === 'file') {
+      files.push(item);
+    } else if (item.type === 'dir') {
+      // 再帰的にディレクトリ内のファイルを取得
+      const subFiles = await fetchAllRepositoryFiles(owner, repo, item.path);
+      files.push(...subFiles);
+    }
+  }
+  
+  return files;
+};
+
 export const downloadFile = async (downloadUrl: string): Promise<string> => {
   const response = await fetch(downloadUrl);
   if (!response.ok) {
