@@ -6,12 +6,12 @@ import {
   isAuthenticatedAtom,
   usernameAtom,
   authTokenAtom,
-} from '../store/atoms';
-import { RepositoryList } from '../repository/RepositoryList';
-import { FileList } from '../file/FileList';
-import { HistoryList } from '../history/HistoryList';
-import { AuthScreen } from '../auth/AuthScreen';
-import { getStoredAuth } from '../auth/github-auth';
+} from './features/store/atoms';
+import { RepositoryList } from './features/repository/RepositoryList';
+import { FileList } from './features/file/FileList';
+import { HistoryList } from './features/history/HistoryList';
+import { AuthScreen } from './features/auth/AuthScreen';
+import { getStoredAuth } from './features/auth/github-auth';
 
 export const App: React.FC = () => {
   const [view] = useAtom(viewAtom);
