@@ -37,7 +37,7 @@ export const AuthComponent: React.FC<AuthComponentProps> = ({
   useEffect(() => {
     const authenticate = async () => {
       try {
-        await startDeviceFlow(
+        const result = await startDeviceFlow(
           (data) => {
             setUserCode(data.user_code);
             setVerificationUri(data.verification_uri);
@@ -53,7 +53,9 @@ export const AuthComponent: React.FC<AuthComponentProps> = ({
           },
         );
 
-        // 認証完了は親コンポーネントで処理される
+        // 認証完了時に親コンポーネントに通知
+        setStatus('Authentication successful!');
+        onAuthComplete(result.token, result.username);
       } catch (error) {
         onAuthError(error instanceof Error ? error.message : 'Authentication failed');
       }
