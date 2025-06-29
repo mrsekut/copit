@@ -1,6 +1,13 @@
 import { Octokit } from '@octokit/rest';
 
-const octokit = new Octokit();
+let octokit = new Octokit();
+
+export const setOctokitAuth = (token: string): void => {
+  octokit = new Octokit({
+    auth: token,
+    userAgent: 'github-file-fetcher',
+  });
+};
 
 export type Repository = {
   id: number;
