@@ -12,6 +12,7 @@ import {
   errorAtom,
   selectedRepositoryAtom,
   viewAtom,
+  authTokenAtom,
 } from '../store/atoms';
 import { fetchUserRepositories } from '../github/api';
 import type { Repository } from '../github/api';
@@ -24,6 +25,7 @@ export const RepositoryList: React.FC = () => {
   const [error, setError] = useAtom(errorAtom);
   const [, selectRepository] = useAtom(selectedRepositoryAtom);
   const [, setView] = useAtom(viewAtom);
+  const [authToken] = useAtom(authTokenAtom);
 
   const [filteredRepos, setFilteredRepos] = useState<Repository[]>([]);
 
@@ -32,7 +34,7 @@ export const RepositoryList: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const repos = await fetchUserRepositories(username);
+        const repos = await fetchUserRepositories(username, authToken);
         setRepositories(repos);
       } catch (err) {
         setError(
@@ -44,7 +46,7 @@ export const RepositoryList: React.FC = () => {
     };
 
     loadRepositories();
-  }, [username, setRepositories, setLoading, setError]);
+  }, [username, authToken, setRepositories, setLoading, setError]);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {

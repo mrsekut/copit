@@ -12,6 +12,7 @@ import {
   errorAtom,
   selectedFileAtom,
   viewAtom,
+  authTokenAtom,
 } from '../store/atoms';
 import { fetchAllRepositoryFiles } from '../github/api';
 import { downloadAndSaveFile } from '../download/download';
@@ -25,6 +26,7 @@ export const FileList: React.FC = () => {
   const [error, setError] = useAtom(errorAtom);
   const [selectedFile, selectFile] = useAtom(selectedFileAtom);
   const [, setView] = useAtom(viewAtom);
+  const [authToken] = useAtom(authTokenAtom);
 
   const [filteredFiles, setFilteredFiles] = useState<FileItem[]>([]);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -66,7 +68,7 @@ export const FileList: React.FC = () => {
       setError(null);
       try {
         const [owner, repo] = selectedRepository.fullName.split('/');
-        const items = await fetchAllRepositoryFiles(owner, repo);
+        const items = await fetchAllRepositoryFiles(owner, repo, '', authToken);
         setFiles(items);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load files');
@@ -76,7 +78,7 @@ export const FileList: React.FC = () => {
     };
 
     loadFiles();
-  }, [selectedRepository, setFiles, setLoading, setError]);
+  }, [selectedRepository, authToken, setFiles, setLoading, setError]);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
