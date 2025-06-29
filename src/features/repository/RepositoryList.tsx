@@ -31,10 +31,12 @@ export const RepositoryList: React.FC = () => {
 
   useEffect(() => {
     const loadRepositories = async () => {
+      if (!authToken) return;
+      
       setLoading(true);
       setError(null);
       try {
-        const repos = await fetchUserRepositories(username, authToken);
+        const repos = await fetchUserRepositories(authToken);
         setRepositories(repos);
       } catch (err) {
         setError(

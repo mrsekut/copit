@@ -4,9 +4,8 @@ import { useAtom } from 'jotai';
 import { viewAtom, selectedFileAtom, isAuthenticatedAtom, usernameAtom, authTokenAtom } from '../store/atoms';
 import { RepositoryList } from '../repository/RepositoryList';
 import { FileList } from '../file/FileList';
-import { AuthComponent } from '../auth/AuthComponent';
-import { getValidAuthConfig } from '../auth/auth-manager';
-import { setOctokitAuth } from '../github/api';
+import { AuthScreen } from '../auth/AuthScreen';
+import { getStoredAuth } from '../auth/github-auth';
 
 export const App: React.FC = () => {
   const [view] = useAtom(viewAtom);
@@ -18,23 +17,21 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const authConfig = await getValidAuthConfig();
-      if (authConfig) {
+      const authResult = await getStoredAuth();
+      if (authResult) {
         setIsAuthenticated(true);
-        setUsername(authConfig.username);
-        setAuthToken(authConfig.token);
-        setOctokitAuth(authConfig.token);
+        setUsername(authResult.username);
+        setAuthToken(authResult.token);
       }
     };
 
     checkAuth();
   }, [setIsAuthenticated, setUsername, setAuthToken]);
 
-  const handleAuthComplete = (token: string, username: string) => {
+  const handleAuthSuccess = (token: string, username: string) => {
     setIsAuthenticated(true);
     setUsername(username);
     setAuthToken(token);
-    setOctokitAuth(token);
   };
 
   const handleAuthError = (error: string) => {
@@ -50,7 +47,7 @@ export const App: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <Box flexDirection="column" padding={1}>
-        <AuthComponent onAuthComplete={handleAuthComplete} onAuthError={handleAuthError} />
+        <AuthScreen onSuccess={handleAuthSuccess} onError={handleAuthError} />
         {authError && (
           <Box marginTop={1}>
             <Text color="red">Error: {authError}</Text>

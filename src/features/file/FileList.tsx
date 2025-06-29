@@ -68,7 +68,7 @@ export const FileList: React.FC = () => {
       setError(null);
       try {
         const [owner, repo] = selectedRepository.fullName.split('/');
-        const items = await fetchAllRepositoryFiles(owner, repo, '', authToken);
+        const items = await fetchAllRepositoryFiles(owner, repo, authToken);
         setFiles(items);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load files');

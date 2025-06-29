@@ -1,14 +1,5 @@
 import { Octokit } from '@octokit/rest';
 
-let octokit = new Octokit();
-
-export const setOctokitAuth = (token: string): void => {
-  octokit = new Octokit({
-    auth: token,
-    userAgent: 'github-file-fetcher',
-  });
-};
-
 export type Repository = {
   id: number;
   name: string;
@@ -25,42 +16,39 @@ export type FileItem = {
   downloadUrl?: string | null;
 };
 
-export const fetchUserRepositories = async (
-  username: string,
-  token?: string,
-): Promise<Repository[]> => {
-  // 認証されたユーザーの場合は listForAuthenticatedUser を使用
-  try {
-    // トークンが提供された場合は新しい認証済みOctokitインスタンスを使用
-    const authenticatedOctokit = token ? new Octokit({ auth: token, userAgent: 'github-file-fetcher' }) : octokit;
-    
-    const { data } = await authenticatedOctokit.repos.listForAuthenticatedUser({
-      per_page: 100,
-      sort: 'updated',
-      visibility: 'all', // public + private リポジトリを取得
-    });
+export const fetchUserRepositories = async (token: string): Promise<Repository[]> => {
+  const octokit = new Octokit({ 
+    auth: token, 
+    userAgent: 'github-file-fetcher' 
+  });
+  
+  const { data } = await octokit.repos.listForAuthenticatedUser({
+    per_page: 100,
+    sort: 'updated',
+    visibility: 'all',
+  });
 
-    return data.map(repo => ({
-      id: repo.id,
-      name: repo.name,
-      fullName: repo.full_name,
-      private: repo.private,
-      description: repo.description,
-    }));
-  } catch (error) {
-    throw error;
-  }
+  return data.map(repo => ({
+    id: repo.id,
+    name: repo.name,
+    fullName: repo.full_name,
+    private: repo.private,
+    description: repo.description,
+  }));
 };
 
 export const fetchRepositoryContents = async (
   owner: string,
   repo: string,
-  path: string = '',
-  token?: string,
+  path: string,
+  token: string,
 ): Promise<FileItem[]> => {
-  const authenticatedOctokit = token ? new Octokit({ auth: token, userAgent: 'github-file-fetcher' }) : octokit;
+  const octokit = new Octokit({ 
+    auth: token, 
+    userAgent: 'github-file-fetcher' 
+  });
   
-  const { data } = await authenticatedOctokit.repos.getContent({
+  const { data } = await octokit.repos.getContent({
     owner,
     repo,
     path,
@@ -82,8 +70,8 @@ export const fetchRepositoryContents = async (
 export const fetchAllRepositoryFiles = async (
   owner: string,
   repo: string,
+  token: string,
   path: string = '',
-  token?: string,
 ): Promise<FileItem[]> => {
   const items = await fetchRepositoryContents(owner, repo, path, token);
   const files: FileItem[] = [];
@@ -92,8 +80,7 @@ export const fetchAllRepositoryFiles = async (
     if (item.type === 'file') {
       files.push(item);
     } else if (item.type === 'dir') {
-      // 再帰的にディレクトリ内のファイルを取得
-      const subFiles = await fetchAllRepositoryFiles(owner, repo, item.path, token);
+      const subFiles = await fetchAllRepositoryFiles(owner, repo, token, item.path);
       files.push(...subFiles);
     }
   }
