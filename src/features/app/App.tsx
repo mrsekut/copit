@@ -4,6 +4,7 @@ import { useAtom } from 'jotai';
 import { viewAtom, selectedFileAtom, isAuthenticatedAtom, usernameAtom, authTokenAtom } from '../store/atoms';
 import { RepositoryList } from '../repository/RepositoryList';
 import { FileList } from '../file/FileList';
+import { HistoryList } from '../history/HistoryList';
 import { AuthScreen } from '../auth/AuthScreen';
 import { getStoredAuth } from '../auth/github-auth';
 
@@ -43,7 +44,7 @@ export const App: React.FC = () => {
   };
 
   useInput((input, key) => {
-    if (key.escape && view === 'repositories') {
+    if (key.escape && (view === 'repositories' || view === 'history')) {
       process.exit(0);
     }
   });
@@ -78,13 +79,13 @@ export const App: React.FC = () => {
         </Text>
       </Box>
       <Box borderStyle="single" flexDirection="column" padding={1}>
+        {view === 'history' && <HistoryList />}
         {view === 'repositories' && <RepositoryList />}
         {view === 'files' && <FileList />}
       </Box>
       <Box marginTop={1}>
         <Text dimColor>
-          [↑/↓] Navigate [Enter] Select [Esc]{' '}
-          {view === 'repositories' ? 'Exit' : 'Back'}
+          [↑/↓] Navigate [Enter] {view === 'files' ? 'Download' : 'Select'} [Tab] Switch views [Esc] {view === 'files' ? 'Back' : 'Exit'}
         </Text>
       </Box>
       {selectedFile && (

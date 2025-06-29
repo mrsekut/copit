@@ -44,7 +44,11 @@ export const FileList: React.FC = () => {
       setDownloadStatus(`Downloading ${selectedFile.name}...`);
 
       try {
-        await downloadAndSaveFile(selectedFile.downloadUrl, selectedFile.path);
+        await downloadAndSaveFile(
+          selectedFile.downloadUrl, 
+          selectedFile.path, 
+          selectedRepository?.fullName || 'unknown'
+        );
         setDownloadStatus(`✅ Downloaded: ${selectedFile.path}`);
         setTimeout(() => {
           setDownloadStatus('');

@@ -4,6 +4,7 @@ import SelectInput from 'ink-select-input';
 import TextInput from 'ink-text-input';
 import Fuse from 'fuse.js';
 import { useAtom } from 'jotai';
+import { useInput } from 'ink';
 import {
   usernameAtom,
   repositoriesAtom,
@@ -28,6 +29,13 @@ export const RepositoryList: React.FC = () => {
   const [authToken] = useAtom(authTokenAtom);
 
   const [filteredRepos, setFilteredRepos] = useState<Repository[]>([]);
+
+  useInput((input, key) => {
+    if (key.tab) {
+      setView('history');
+      setSearchQuery('');
+    }
+  });
 
   useEffect(() => {
     const loadRepositories = async () => {
@@ -101,7 +109,8 @@ export const RepositoryList: React.FC = () => {
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
-        <Text bold>Repositories for {username}</Text>
+        <Text bold>Browse Repositories</Text>
+        <Text dimColor> (Tab: Recent Files)</Text>
       </Box>
       <Box marginBottom={1}>
         <Text>Search: </Text>
