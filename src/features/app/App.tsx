@@ -73,10 +73,15 @@ export const App: React.FC = () => {
 
   return (
     <Box flexDirection="column" padding={1}>
-      <Box marginBottom={1}>
+      <Box marginBottom={1} flexDirection="row" justifyContent="space-between" alignItems="center">
         <Text bold color="cyan">
           GitHub File Fetcher TUI
         </Text>
+        <Box flexDirection="row">
+          <Text color={view === 'history' ? 'cyan' : 'gray'}>📋 History</Text>
+          <Text dimColor> | </Text>
+          <Text color={view === 'repositories' || view === 'files' ? 'cyan' : 'gray'}>📁 Browse</Text>
+        </Box>
       </Box>
       <Box borderStyle="single" flexDirection="column" padding={1}>
         {view === 'history' && <HistoryList />}
@@ -85,7 +90,7 @@ export const App: React.FC = () => {
       </Box>
       <Box marginTop={1}>
         <Text dimColor>
-          [↑/↓] Navigate [Enter] {view === 'files' ? 'Download' : 'Select'} [Tab] Switch views [Esc] {view === 'files' ? 'Back' : 'Exit'}
+          [↑/↓] Navigate [Enter] {view === 'files' ? 'Download' : 'Select'} {view !== 'files' ? '[Tab] Switch' : ''} [Esc] {view === 'files' ? 'Back' : 'Exit'}
         </Text>
       </Box>
       {selectedFile && (

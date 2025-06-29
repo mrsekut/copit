@@ -21,7 +21,7 @@ export const downloadAndSaveFile = async (
 ): Promise<void> => {
   const content = await downloadFile(downloadUrl);
   await saveFile(filePath, content);
-  
+
   // 履歴に追加
   await addToHistory({
     filePath,

@@ -103,9 +103,14 @@ export const HistoryList: React.FC = () => {
 
   return (
     <Box flexDirection="column">
-      <Box marginBottom={1}>
-        <Text bold>Recent Files</Text>
-        <Text dimColor> (Tab: Browse Repositories)</Text>
+      <Box marginBottom={1} flexDirection="row" justifyContent="space-between">
+        <Box>
+          <Text bold color="cyan">📋 Download History</Text>
+        </Box>
+        <Box>
+          <Text dimColor>[Tab] </Text>
+          <Text>📁 Browse Files</Text>
+        </Box>
       </Box>
       
       <Box marginBottom={1}>
@@ -126,7 +131,7 @@ export const HistoryList: React.FC = () => {
         </>
       ) : (
         <Box flexDirection="column">
-          <Text dimColor>No recent downloads found</Text>
+          <Text dimColor>No download history found</Text>
           <Text dimColor>Download some files to see them here!</Text>
         </Box>
       )}

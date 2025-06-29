@@ -108,9 +108,14 @@ export const RepositoryList: React.FC = () => {
 
   return (
     <Box flexDirection="column">
-      <Box marginBottom={1}>
-        <Text bold>Browse Repositories</Text>
-        <Text dimColor> (Tab: Recent Files)</Text>
+      <Box marginBottom={1} flexDirection="row" justifyContent="space-between">
+        <Box>
+          <Text bold color="cyan">📁 Browse Files</Text>
+        </Box>
+        <Box>
+          <Text dimColor>[Tab] </Text>
+          <Text>📋 Download History</Text>
+        </Box>
       </Box>
       <Box marginBottom={1}>
         <Text>Search: </Text>
