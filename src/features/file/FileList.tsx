@@ -1,36 +1,30 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Box, Text, useInput } from 'ink';
 import SelectInput from 'ink-select-input';
 import TextInput from 'ink-text-input';
-import Fuse from 'fuse.js';
 import { useAtom, useSetAtom } from 'jotai';
-import {
-  filesAtom,
-  searchQueryAtom,
-  isLoadingAtom,
-  errorAtom,
-  selectedFileAtom,
-  viewAtom,
-} from '../store/atoms';
+import { searchQueryAtom, viewAtom } from '../store/atoms';
 import { useAuthToken } from '../auth/useAuthToken';
 import { useSelectedRepository } from '../repository/useSelectedRepository';
-import { fetchAllRepositoryFiles } from '../github/api';
-import { downloadAndSaveFile } from '../download/download';
-import type { FileItem } from '../github/api';
+import { useFiles } from './useFiles';
 
 export const FileList: React.FC = () => {
   const selectedRepository = useSelectedRepository();
-  const [files, setFiles] = useAtom(filesAtom);
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
-  const [isLoading, setLoading] = useAtom(isLoadingAtom);
-  const [error, setError] = useAtom(errorAtom);
-  const selectFile = useSetAtom(selectedFileAtom);
   const setView = useSetAtom(viewAtom);
   const { token: authToken } = useAuthToken();
-
-  const [filteredFiles, setFilteredFiles] = useState<FileItem[]>([]);
-  const [isDownloading, setIsDownloading] = useState(false);
-  const [downloadStatus, setDownloadStatus] = useState<string>('');
+  const {
+    files,
+    filteredFiles,
+    isLoading,
+    error,
+    isDownloading,
+    downloadStatus,
+    loadFiles,
+    selectFile,
+    filterFiles,
+    downloadFile,
+  } = useFiles();
 
   useInput(async (input, key) => {
     if (key.escape) {
@@ -41,63 +35,19 @@ export const FileList: React.FC = () => {
   });
 
   useEffect(() => {
-    if (!selectedRepository) return;
-
-    const loadFiles = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const [owner, repo] = selectedRepository.fullName.split('/');
-        const items = await fetchAllRepositoryFiles(owner, repo, authToken);
-        setFiles(items);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load files');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadFiles();
-  }, [selectedRepository, authToken, setFiles, setLoading, setError]);
+    if (selectedRepository) {
+      loadFiles(selectedRepository, authToken);
+    }
+  }, [selectedRepository, authToken]);
 
   useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setFilteredFiles(files);
-    } else {
-      const fuse = new Fuse(files, {
-        keys: ['name', 'path'],
-        threshold: 0.3,
-      });
-      const results = fuse.search(searchQuery);
-      setFilteredFiles(results.map(result => result.item));
-    }
-  }, [searchQuery, files]);
+    filterFiles(searchQuery);
+  }, [searchQuery]);
 
   const handleSelect = async (item: { value: string }) => {
     const file = files.find(f => f.path === item.value);
-    if (file && file.downloadUrl) {
-      selectFile(file);
-      setIsDownloading(true);
-      setDownloadStatus(`Downloading ${file.name}...`);
-
-      try {
-        await downloadAndSaveFile(
-          file.downloadUrl,
-          file.path,
-          selectedRepository?.fullName || 'unknown',
-        );
-        setDownloadStatus(`✅ Downloaded: ${file.path}`);
-        setTimeout(() => {
-          setDownloadStatus('');
-          selectFile(null);
-        }, 2000);
-      } catch (err) {
-        setDownloadStatus(
-          `❌ Failed to download: ${err instanceof Error ? err.message : 'Unknown error'}`,
-        );
-      } finally {
-        setIsDownloading(false);
-      }
+    if (file && selectedRepository) {
+      await downloadFile(file, selectedRepository);
     }
   };
 
