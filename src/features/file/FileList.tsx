@@ -3,9 +3,8 @@ import { Box, Text, useInput } from 'ink';
 import SelectInput from 'ink-select-input';
 import TextInput from 'ink-text-input';
 import Fuse from 'fuse.js';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import {
-  selectedRepositoryAtom,
   filesAtom,
   searchQueryAtom,
   isLoadingAtom,
@@ -14,12 +13,13 @@ import {
   viewAtom,
 } from '../store/atoms';
 import { useAuthToken } from '../auth/useAuthToken';
+import { useSelectedRepository } from '../repository/useSelectedRepository';
 import { fetchAllRepositoryFiles } from '../github/api';
 import { downloadAndSaveFile } from '../download/download';
 import type { FileItem } from '../github/api';
 
 export const FileList: React.FC = () => {
-  const selectedRepository = useAtomValue(selectedRepositoryAtom);
+  const selectedRepository = useSelectedRepository();
   const [files, setFiles] = useAtom(filesAtom);
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const [isLoading, setLoading] = useAtom(isLoadingAtom);

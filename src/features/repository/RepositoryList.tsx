@@ -1,32 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Box, Text } from 'ink';
 import SelectInput from 'ink-select-input';
 import TextInput from 'ink-text-input';
-import Fuse from 'fuse.js';
 import { useAtom, useSetAtom } from 'jotai';
 import { useInput } from 'ink';
 import {
-  repositoriesAtom,
   searchQueryAtom,
-  isLoadingAtom,
-  errorAtom,
-  selectedRepositoryAtom,
   viewAtom,
 } from '../store/atoms';
 import { useAuthToken } from '../auth/useAuthToken';
-import { fetchUserRepositories } from '../github/api';
-import type { Repository } from '../github/api';
+import { useRepositories } from './useRepositories';
 
 export const RepositoryList: React.FC = () => {
   const { username, token: authToken } = useAuthToken();
-  const [repositories, setRepositories] = useAtom(repositoriesAtom);
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
-  const [isLoading, setLoading] = useAtom(isLoadingAtom);
-  const [error, setError] = useAtom(errorAtom);
-  const selectRepository = useSetAtom(selectedRepositoryAtom);
   const setView = useSetAtom(viewAtom);
-
-  const [filteredRepos, setFilteredRepos] = useState<Repository[]>([]);
+  const {
+    repositories,
+    filteredRepos,
+    isLoading,
+    error,
+    loadRepositories,
+    selectRepository,
+    filterRepositories,
+  } = useRepositories();
 
   useInput((input, key) => {
     if (key.tab) {
@@ -36,44 +33,18 @@ export const RepositoryList: React.FC = () => {
   });
 
   useEffect(() => {
-    const loadRepositories = async () => {
-      if (!authToken) return;
-
-      setLoading(true);
-      setError(null);
-      try {
-        const repos = await fetchUserRepositories(authToken);
-        setRepositories(repos);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to load repositories',
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadRepositories();
-  }, [username, authToken, setRepositories, setLoading, setError]);
+    loadRepositories(authToken);
+  }, [username, authToken]);
 
   useEffect(() => {
-    if (searchQuery.trim() === '') {
-      setFilteredRepos(repositories);
-    } else {
-      const fuse = new Fuse(repositories, {
-        keys: ['name', 'description'],
-        threshold: 0.3,
-      });
-      const results = fuse.search(searchQuery);
-      setFilteredRepos(results.map(result => result.item));
-    }
-  }, [searchQuery, repositories]);
+    filterRepositories(searchQuery);
+  }, [searchQuery]);
 
   const handleSelect = (item: { value: string }) => {
     const repo = repositories.find(r => r.fullName === item.value);
     if (repo) {
       selectRepository(repo);
-      setSearchQuery(''); // 検索フィールドをクリア
+      setSearchQuery('');
       setView('files');
     }
   };
