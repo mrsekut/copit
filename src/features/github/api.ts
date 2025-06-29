@@ -28,10 +28,11 @@ export type FileItem = {
 export const fetchUserRepositories = async (
   username: string,
 ): Promise<Repository[]> => {
-  const { data } = await octokit.repos.listForUser({
-    username,
+  // 認証されたユーザーの場合は listForAuthenticatedUser を使用
+  const { data } = await octokit.repos.listForAuthenticatedUser({
     per_page: 100,
     sort: 'updated',
+    visibility: 'all', // public + private リポジトリを取得
   });
 
   return data.map(repo => ({
