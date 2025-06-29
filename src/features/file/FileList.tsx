@@ -140,6 +140,11 @@ export const FileList: React.FC = () => {
 
   const allItems = [...dirItems, ...fileItems];
 
+  // 画面の高さを考慮して表示数を制限
+  const MAX_VISIBLE_ITEMS = 10;
+  const limitedItems = allItems.slice(0, MAX_VISIBLE_ITEMS);
+  const hasMore = allItems.length > MAX_VISIBLE_ITEMS;
+
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
@@ -155,8 +160,17 @@ export const FileList: React.FC = () => {
           <Text dimColor>Press Esc to go back</Text>
         </Box>
       )}
-      {allItems.length > 0 ? (
-        <SelectInput items={allItems} onSelect={handleSelect} />
+      {limitedItems.length > 0 ? (
+        <>
+          <SelectInput items={limitedItems} onSelect={handleSelect} />
+          {hasMore && searchQuery.trim() === '' && (
+            <Box marginTop={1}>
+              <Text dimColor>
+                ... and {allItems.length - MAX_VISIBLE_ITEMS} more items. Type to search files.
+              </Text>
+            </Box>
+          )}
+        </>
       ) : (
         <Text dimColor>No files found</Text>
       )}

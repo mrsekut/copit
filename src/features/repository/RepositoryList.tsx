@@ -88,6 +88,11 @@ export const RepositoryList: React.FC = () => {
     value: repo.fullName,
   }));
 
+  // 画面の高さを考慮して表示数を制限
+  const MAX_VISIBLE_ITEMS = 10;
+  const limitedItems = items.slice(0, MAX_VISIBLE_ITEMS);
+  const hasMore = items.length > MAX_VISIBLE_ITEMS;
+
   return (
     <Box flexDirection="column">
       <Box marginBottom={1}>
@@ -97,8 +102,17 @@ export const RepositoryList: React.FC = () => {
         <Text>Search: </Text>
         <TextInput value={searchQuery} onChange={setSearchQuery} />
       </Box>
-      {items.length > 0 ? (
-        <SelectInput items={items} onSelect={handleSelect} />
+      {limitedItems.length > 0 ? (
+        <>
+          <SelectInput items={limitedItems} onSelect={handleSelect} />
+          {hasMore && searchQuery.trim() === '' && (
+            <Box marginTop={1}>
+              <Text dimColor>
+                ... and {items.length - MAX_VISIBLE_ITEMS} more repositories. Type to search.
+              </Text>
+            </Box>
+          )}
+        </>
       ) : (
         <Text dimColor>No repositories found</Text>
       )}
