@@ -2,8 +2,8 @@ import React from 'react';
 import { Box, Text, useInput } from 'ink';
 import { useAtom } from 'jotai';
 import { viewAtom, selectedFileAtom } from '../store/atoms';
-import { RepositoryList } from './RepositoryList';
-import { FileList } from './FileList';
+import { RepositoryList } from '../repository/RepositoryList';
+import { FileList } from '../file/FileList';
 
 export const App: React.FC = () => {
   const [view] = useAtom(viewAtom);

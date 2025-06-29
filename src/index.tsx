@@ -2,7 +2,7 @@
 import React from 'react';
 import { render } from 'ink';
 import { Provider } from 'jotai';
-import { App } from './features/ui/App';
+import { App } from './features/app/App';
 
 const app = render(
   <Provider>
