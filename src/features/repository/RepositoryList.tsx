@@ -63,6 +63,7 @@ export const RepositoryList: React.FC = () => {
     const repo = repositories.find(r => r.fullName === item.value);
     if (repo) {
       selectRepository(repo);
+      setSearchQuery(''); // 検索フィールドをクリア
       setView('files');
     }
   };
