@@ -1,10 +1,17 @@
 import React from 'react';
-import { Box, Text } from 'ink';
+import { Box, Text, useInput } from 'ink';
 import { useAppStore } from '../store/app';
 import { RepositoryList } from './RepositoryList';
+import { FileList } from './FileList';
 
 export const App: React.FC = () => {
-  const { view } = useAppStore();
+  const { view, selectedFile } = useAppStore();
+
+  useInput((input, key) => {
+    if (key.escape && view === 'repositories') {
+      process.exit(0);
+    }
+  });
 
   return (
     <Box flexDirection="column" padding={1}>
@@ -15,13 +22,19 @@ export const App: React.FC = () => {
       </Box>
       <Box borderStyle="single" flexDirection="column" padding={1}>
         {view === 'repositories' && <RepositoryList />}
-        {view === 'files' && <Text>File list will be here</Text>}
+        {view === 'files' && <FileList />}
       </Box>
       <Box marginTop={1}>
         <Text dimColor>
-          [↑/↓] Navigate [Enter] Select [Esc] Exit
+          [↑/↓] Navigate [Enter] Select [Esc] {view === 'repositories' ? 'Exit' : 'Back'}
         </Text>
       </Box>
+      {selectedFile && (
+        <Box marginTop={1}>
+          <Text color="green">Selected: {selectedFile.path}</Text>
+          <Text dimColor>Press Enter to download</Text>
+        </Box>
+      )}
     </Box>
   );
 };
