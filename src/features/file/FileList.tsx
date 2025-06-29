@@ -24,7 +24,7 @@ export const FileList: React.FC = () => {
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const [isLoading, setLoading] = useAtom(isLoadingAtom);
   const [error, setError] = useAtom(errorAtom);
-  const [selectedFile, selectFile] = useAtom(selectedFileAtom);
+  const [, selectFile] = useAtom(selectedFileAtom);
   const [, setView] = useAtom(viewAtom);
   const [authToken] = useAtom(authTokenAtom);
 
@@ -37,30 +37,6 @@ export const FileList: React.FC = () => {
       setView('repositories');
       setSearchQuery('');
       selectFile(null);
-    }
-
-    if (key.return && selectedFile && selectedFile.downloadUrl) {
-      setIsDownloading(true);
-      setDownloadStatus(`Downloading ${selectedFile.name}...`);
-
-      try {
-        await downloadAndSaveFile(
-          selectedFile.downloadUrl, 
-          selectedFile.path, 
-          selectedRepository?.fullName || 'unknown'
-        );
-        setDownloadStatus(`✅ Downloaded: ${selectedFile.path}`);
-        setTimeout(() => {
-          setDownloadStatus('');
-          selectFile(null);
-        }, 2000);
-      } catch (err) {
-        setDownloadStatus(
-          `❌ Failed to download: ${err instanceof Error ? err.message : 'Unknown error'}`,
-        );
-      } finally {
-        setIsDownloading(false);
-      }
     }
   });
 
@@ -97,10 +73,31 @@ export const FileList: React.FC = () => {
     }
   }, [searchQuery, files]);
 
-  const handleSelect = (item: { value: string }) => {
+  const handleSelect = async (item: { value: string }) => {
     const file = files.find(f => f.path === item.value);
-    if (file) {
+    if (file && file.downloadUrl) {
       selectFile(file);
+      setIsDownloading(true);
+      setDownloadStatus(`Downloading ${file.name}...`);
+
+      try {
+        await downloadAndSaveFile(
+          file.downloadUrl,
+          file.path,
+          selectedRepository?.fullName || 'unknown'
+        );
+        setDownloadStatus(`✅ Downloaded: ${file.path}`);
+        setTimeout(() => {
+          setDownloadStatus('');
+          selectFile(null);
+        }, 2000);
+      } catch (err) {
+        setDownloadStatus(
+          `❌ Failed to download: ${err instanceof Error ? err.message : 'Unknown error'}`,
+        );
+      } finally {
+        setIsDownloading(false);
+      }
     }
   };
 

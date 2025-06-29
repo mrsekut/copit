@@ -12,9 +12,10 @@
     "dev": "bun run src/index.tsx",
     "build": "bun build src/index.tsx --outdir dist --target node",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write .",
-    "test": "vitest"
+    "test": "vitest",
+    "check": "bun typecheck && bun lint && bun format && bun test"
   },
   "dependencies": {
     "@octokit/auth-oauth-device": "^8.0.1",
