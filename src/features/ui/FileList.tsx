@@ -3,26 +3,28 @@ import { Box, Text, useInput } from 'ink';
 import SelectInput from 'ink-select-input';
 import TextInput from 'ink-text-input';
 import Fuse from 'fuse.js';
-import { useAppStore } from '../store/app';
+import { useAtom } from 'jotai';
+import {
+  selectedRepositoryAtom,
+  filesAtom,
+  searchQueryAtom,
+  isLoadingAtom,
+  errorAtom,
+  selectedFileAtom,
+  viewAtom,
+} from '../store/atoms';
 import { fetchRepositoryContents } from '../github/api';
 import { downloadAndSaveFile } from '../download/download';
 import type { FileItem } from '../github/api';
 
 export const FileList: React.FC = () => {
-  const {
-    selectedRepository,
-    files,
-    searchQuery,
-    isLoading,
-    error,
-    selectedFile,
-    setFiles,
-    setSearchQuery,
-    selectFile,
-    setView,
-    setLoading,
-    setError,
-  } = useAppStore();
+  const [selectedRepository] = useAtom(selectedRepositoryAtom);
+  const [files, setFiles] = useAtom(filesAtom);
+  const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
+  const [isLoading, setLoading] = useAtom(isLoadingAtom);
+  const [error, setError] = useAtom(errorAtom);
+  const [selectedFile, selectFile] = useAtom(selectedFileAtom);
+  const [, setView] = useAtom(viewAtom);
 
   const [filteredFiles, setFilteredFiles] = useState<FileItem[]>([]);
   const [currentPath, setCurrentPath] = useState<string>('');

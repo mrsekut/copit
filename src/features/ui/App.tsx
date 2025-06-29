@@ -1,11 +1,13 @@
 import React from 'react';
 import { Box, Text, useInput } from 'ink';
-import { useAppStore } from '../store/app';
+import { useAtom } from 'jotai';
+import { viewAtom, selectedFileAtom } from '../store/atoms';
 import { RepositoryList } from './RepositoryList';
 import { FileList } from './FileList';
 
 export const App: React.FC = () => {
-  const { view, selectedFile } = useAppStore();
+  const [view] = useAtom(viewAtom);
+  const [selectedFile] = useAtom(selectedFileAtom);
 
   useInput((input, key) => {
     if (key.escape && view === 'repositories') {
