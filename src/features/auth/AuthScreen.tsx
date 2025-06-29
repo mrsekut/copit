@@ -3,15 +3,12 @@ import { Box, Text } from 'ink';
 import { spawn } from 'child_process';
 import { authenticateWithGitHub, type VerificationData } from './github-auth';
 
-type AuthScreenProps = {
+type Props = {
   onSuccess: (token: string, username: string) => void;
   onError: (error: string) => void;
 };
 
-export const AuthScreen: React.FC<AuthScreenProps> = ({
-  onSuccess,
-  onError,
-}) => {
+export const AuthScreen: React.FC<Props> = ({ onSuccess, onError }) => {
   const [status, setStatus] = useState('Initializing authentication...');
   const [verificationData, setVerificationData] =
     useState<VerificationData | null>(null);

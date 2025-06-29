@@ -3,7 +3,7 @@ import { Box, Text, useInput } from 'ink';
 import SelectInput from 'ink-select-input';
 import TextInput from 'ink-text-input';
 import Fuse from 'fuse.js';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
   selectedRepositoryAtom,
   filesAtom,
@@ -19,14 +19,14 @@ import { downloadAndSaveFile } from '../download/download';
 import type { FileItem } from '../github/api';
 
 export const FileList: React.FC = () => {
-  const [selectedRepository] = useAtom(selectedRepositoryAtom);
+  const selectedRepository = useAtomValue(selectedRepositoryAtom);
   const [files, setFiles] = useAtom(filesAtom);
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const [isLoading, setLoading] = useAtom(isLoadingAtom);
   const [error, setError] = useAtom(errorAtom);
-  const [, selectFile] = useAtom(selectedFileAtom);
-  const [, setView] = useAtom(viewAtom);
-  const [authToken] = useAtom(authTokenAtom);
+  const selectFile = useSetAtom(selectedFileAtom);
+  const setView = useSetAtom(viewAtom);
+  const authToken = useAtomValue(authTokenAtom);
 
   const [filteredFiles, setFilteredFiles] = useState<FileItem[]>([]);
   const [isDownloading, setIsDownloading] = useState(false);

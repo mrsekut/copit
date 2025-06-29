@@ -2,8 +2,8 @@ import { atom } from 'jotai';
 import type { Repository, FileItem } from '../github/api';
 
 export type View = 'repositories' | 'files' | 'history';
-
 export const viewAtom = atom<View>('history');
+
 export const usernameAtom = atom('');
 export const isAuthenticatedAtom = atom(false);
 export const authTokenAtom = atom('');

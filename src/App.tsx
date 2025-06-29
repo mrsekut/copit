@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Text, useInput } from 'ink';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
   viewAtom,
   isAuthenticatedAtom,
@@ -14,10 +14,10 @@ import { AuthScreen } from './features/auth/AuthScreen';
 import { getStoredAuth } from './features/auth/github-auth';
 
 export const App: React.FC = () => {
-  const [view] = useAtom(viewAtom);
+  const view = useAtomValue(viewAtom);
   const [isAuthenticated, setIsAuthenticated] = useAtom(isAuthenticatedAtom);
-  const [, setUsername] = useAtom(usernameAtom);
-  const [, setAuthToken] = useAtom(authTokenAtom);
+  const setUsername = useSetAtom(usernameAtom);
+  const setAuthToken = useSetAtom(authTokenAtom);
   const [authError, setAuthError] = useState<string>('');
   const [isInitializing, setIsInitializing] = useState(true);
 

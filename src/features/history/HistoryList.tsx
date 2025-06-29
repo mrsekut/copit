@@ -3,13 +3,13 @@ import { Box, Text, useInput } from 'ink';
 import SelectInput from 'ink-select-input';
 import TextInput from 'ink-text-input';
 import Fuse from 'fuse.js';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { viewAtom, searchQueryAtom } from '../store/atoms';
 import { loadHistory, type HistoryItem } from './storage';
 import { downloadAndSaveFile } from '../download/download';
 
 export const HistoryList: React.FC = () => {
-  const [, setView] = useAtom(viewAtom);
+  const setView = useSetAtom(viewAtom);
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
 
   const [history, setHistory] = useState<HistoryItem[]>([]);
