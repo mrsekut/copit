@@ -3,7 +3,6 @@ import { Octokit } from '@octokit/rest';
 let octokit = new Octokit();
 
 export const setOctokitAuth = (token: string): void => {
-  console.log('Setting Octokit auth with token:', token ? 'TOKEN_PROVIDED' : 'NO_TOKEN');
   octokit = new Octokit({
     auth: token,
     userAgent: 'github-file-fetcher',
@@ -49,7 +48,6 @@ export const fetchUserRepositories = async (
       description: repo.description,
     }));
   } catch (error) {
-    console.error('GitHub API Error:', error);
     throw error;
   }
 };
