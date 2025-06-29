@@ -3,30 +3,28 @@ import { Box, Text } from 'ink';
 import SelectInput from 'ink-select-input';
 import TextInput from 'ink-text-input';
 import Fuse from 'fuse.js';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { useInput } from 'ink';
 import {
-  usernameAtom,
   repositoriesAtom,
   searchQueryAtom,
   isLoadingAtom,
   errorAtom,
   selectedRepositoryAtom,
   viewAtom,
-  authTokenAtom,
 } from '../store/atoms';
+import { useAuthToken } from '../auth/useAuthToken';
 import { fetchUserRepositories } from '../github/api';
 import type { Repository } from '../github/api';
 
 export const RepositoryList: React.FC = () => {
-  const username = useAtomValue(usernameAtom);
+  const { username, token: authToken } = useAuthToken();
   const [repositories, setRepositories] = useAtom(repositoriesAtom);
   const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
   const [isLoading, setLoading] = useAtom(isLoadingAtom);
   const [error, setError] = useAtom(errorAtom);
   const selectRepository = useSetAtom(selectedRepositoryAtom);
   const setView = useSetAtom(viewAtom);
-  const authToken = useAtomValue(authTokenAtom);
 
   const [filteredRepos, setFilteredRepos] = useState<Repository[]>([]);
 

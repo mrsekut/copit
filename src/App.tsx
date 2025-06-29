@@ -1,47 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Box, Text, useInput } from 'ink';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import {
-  viewAtom,
-  isAuthenticatedAtom,
-  usernameAtom,
-  authTokenAtom,
-} from './features/store/atoms';
+import { useAtomValue } from 'jotai';
+import { viewAtom } from './features/store/atoms';
 import { RepositoryList } from './features/repository/RepositoryList';
 import { FileList } from './features/file/FileList';
 import { HistoryList } from './features/history/HistoryList';
 import { AuthScreen } from './features/auth/AuthScreen';
-import { getStoredAuth } from './features/auth/github-auth';
+import { useAuth } from './features/auth/useAuth';
 
 export const App: React.FC = () => {
   const view = useAtomValue(viewAtom);
-  const [isAuthenticated, setIsAuthenticated] = useAtom(isAuthenticatedAtom);
-  const setUsername = useSetAtom(usernameAtom);
-  const setAuthToken = useSetAtom(authTokenAtom);
+  const { isAuthenticated, isInitializing, handleAuthSuccess } = useAuth();
   const [authError, setAuthError] = useState<string>('');
-  const [isInitializing, setIsInitializing] = useState(true);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const authResult = await getStoredAuth();
-
-      if (authResult) {
-        setIsAuthenticated(true);
-        setUsername(authResult.username);
-        setAuthToken(authResult.token);
-      }
-
-      setIsInitializing(false);
-    };
-
-    checkAuth();
-  }, [setIsAuthenticated, setUsername, setAuthToken]);
-
-  const handleAuthSuccess = (token: string, username: string) => {
-    setIsAuthenticated(true);
-    setUsername(username);
-    setAuthToken(token);
-  };
 
   const handleAuthError = (error: string) => {
     setAuthError(error);

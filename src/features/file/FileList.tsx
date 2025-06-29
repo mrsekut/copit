@@ -12,8 +12,8 @@ import {
   errorAtom,
   selectedFileAtom,
   viewAtom,
-  authTokenAtom,
 } from '../store/atoms';
+import { useAuthToken } from '../auth/useAuthToken';
 import { fetchAllRepositoryFiles } from '../github/api';
 import { downloadAndSaveFile } from '../download/download';
 import type { FileItem } from '../github/api';
@@ -26,7 +26,7 @@ export const FileList: React.FC = () => {
   const [error, setError] = useAtom(errorAtom);
   const selectFile = useSetAtom(selectedFileAtom);
   const setView = useSetAtom(viewAtom);
-  const authToken = useAtomValue(authTokenAtom);
+  const { token: authToken } = useAuthToken();
 
   const [filteredFiles, setFilteredFiles] = useState<FileItem[]>([]);
   const [isDownloading, setIsDownloading] = useState(false);
