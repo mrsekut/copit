@@ -1,6 +1,6 @@
 {
   "name": "copit",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "GitHub File Fetcher TUI - Download files from GitHub repositories with OAuth authentication, fuzzy search, and download history",
   "module": "src/index.tsx",
   "type": "module",
