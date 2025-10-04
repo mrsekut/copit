@@ -13,13 +13,20 @@ jobs:
       contents: read
       id-token: write
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+
+      - uses: actions/setup-node@v4
         with:
           registry-url: 'https://registry.npmjs.org'
           node-version: 24
-      - uses: oven-sh/setup-bun@735343b667d3e6f658f44d0eca948eb6282f2b76 # v2.0.2
+
+      - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
+
+      # npm 11.5.1以降が必要
+      - name: Update npm
+        run: npm install -g npm@latest
+
       - run: npm publish
