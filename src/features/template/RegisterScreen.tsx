@@ -137,17 +137,19 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
     value: f.path,
   }));
 
+  const relativeCurrentDir =
+    currentDir === projectRoot ? '.' : computeRelativePath(projectRoot, currentDir);
+
   return (
     <Box flexDirection="column">
-      <Box marginBottom={1} flexDirection="row" justifyContent="space-between">
+      <Box marginBottom={1}>
         <Text bold color="cyan">
           📌 Register Template
         </Text>
-        <Text dimColor>Root: {projectRoot}</Text>
       </Box>
 
       <Box marginBottom={1}>
-        <Text dimColor>Current: {currentDir}</Text>
+        <Text dimColor>Current: {relativeCurrentDir}</Text>
       </Box>
 
       <SelectList items={items} onSelect={onSelect} limit={15} />
