@@ -37,7 +37,6 @@
   },
   "dependencies": {
     "ink": "^5.0.1",
-    "ink-text-input": "^6.0.0",
     "jotai": "^2.12.5",
     "react": "^18.3.1"
   },
