@@ -80,7 +80,7 @@ export const RegisterScreen: React.FC = () => {
         message: `✅ Registered: ${templateName}`,
       });
       setTimeout(() => {
-        setView('templates');
+        setRegisterState({ type: 'browsing' });
       }, 1000);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
