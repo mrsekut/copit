@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Text, useInput } from 'ink';
-import SelectInput from 'ink-select-input';
 import TextInput from 'ink-text-input';
+import { SelectList } from './SelectList.js';
 import { useSetAtom } from 'jotai';
 import { viewAtom } from '../store/atoms.js';
 import { loadLocalFiles, type FileEntry } from './file-browser.js';
@@ -140,9 +140,6 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
     value: f.path,
   }));
 
-  const displayItems = items.slice(0, 15);
-  const hasMore = items.length > 15;
-
   return (
     <Box flexDirection="column">
       <Box marginBottom={1} flexDirection="row" justifyContent="space-between">
@@ -156,13 +153,7 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
         <Text dimColor>Current: {currentDir}</Text>
       </Box>
 
-      <SelectInput items={displayItems} onSelect={onSelect} />
-
-      {hasMore && (
-        <Box marginTop={1}>
-          <Text dimColor>... and {items.length - 15} more files</Text>
-        </Box>
-      )}
+      <SelectList items={items} onSelect={onSelect} limit={15} />
     </Box>
   );
 };

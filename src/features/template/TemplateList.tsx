@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Text, useInput } from 'ink';
-import SelectInput from 'ink-select-input';
 import { useSetAtom } from 'jotai';
+import { SelectList } from './SelectList.js';
 import { viewAtom } from '../store/atoms.js';
 import { loadTemplates, deleteTemplate, type Template } from './storage.js';
 import { copyTemplateToDir, checkFileExists, getDestPath } from './copy.js';
@@ -165,7 +165,7 @@ export const TemplateList: React.FC = () => {
       </Box>
 
       {items.length > 0 ? (
-        <SelectInput
+        <SelectList
           items={items}
           onSelect={handleSelect}
           onHighlight={handleHighlight}
