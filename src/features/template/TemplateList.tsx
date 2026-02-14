@@ -8,7 +8,7 @@ import { copyTemplateToDir, checkFileExists, getDestPath } from './copy.js';
 
 type ConfirmState =
   | { type: 'idle' }
-  | { type: 'confirmingOverwrite'; template: Template; destPath: string }
+  | { type: 'confirmingOverwrite'; template: Template }
   | { type: 'confirmingDelete'; template: Template }
   | { type: 'copying' }
   | { type: 'done'; message: string };
@@ -66,8 +66,11 @@ export const TemplateList: React.FC = () => {
   const handleConfirmedCopy = async (template: Template) => {
     setConfirmState({ type: 'copying' });
     try {
-      const destPath = await copyTemplateToDir(template, process.cwd());
-      setConfirmState({ type: 'done', message: `✅ Copied to: ${destPath}` });
+      await copyTemplateToDir(template, process.cwd());
+      setConfirmState({
+        type: 'done',
+        message: `✅ Copied: ${template.relativePath}`,
+      });
       setTimeout(() => setConfirmState({ type: 'idle' }), 2000);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
@@ -100,7 +103,7 @@ export const TemplateList: React.FC = () => {
     const exists = await checkFileExists(destPath);
 
     if (exists) {
-      setConfirmState({ type: 'confirmingOverwrite', template, destPath });
+      setConfirmState({ type: 'confirmingOverwrite', template });
     } else {
       await handleConfirmedCopy(template);
     }
@@ -122,7 +125,7 @@ export const TemplateList: React.FC = () => {
           ⚠️ File already exists
         </Text>
         <Box marginTop={1}>
-          <Text>Overwrite {confirmState.destPath}?</Text>
+          <Text>Overwrite {confirmState.template.relativePath}?</Text>
         </Box>
         <Box marginTop={1}>
           <Text dimColor>[y] Yes [n] No</Text>
