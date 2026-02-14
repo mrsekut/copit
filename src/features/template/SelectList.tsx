@@ -10,6 +10,8 @@ type SelectListProps = {
   items: Item[];
   onSelect: (item: Item) => void;
   onHighlight?: (item: Item) => void;
+  onLeft?: (item: Item) => void;
+  onRight?: (item: Item) => void;
   limit?: number;
 };
 
@@ -17,6 +19,8 @@ export const SelectList: React.FC<SelectListProps> = ({
   items,
   onSelect,
   onHighlight,
+  onLeft,
+  onRight,
   limit = 10,
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -55,6 +59,12 @@ export const SelectList: React.FC<SelectListProps> = ({
     }
     if (key.downArrow) {
       setSelectedIndex(prev => Math.min(items.length - 1, prev + 1));
+    }
+    if (key.leftArrow && onLeft && items[selectedIndex]) {
+      onLeft(items[selectedIndex]);
+    }
+    if (key.rightArrow && onRight && items[selectedIndex]) {
+      onRight(items[selectedIndex]);
     }
     if (key.return) {
       if (items[selectedIndex]) {

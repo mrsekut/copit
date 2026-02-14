@@ -40,6 +40,7 @@ export const App: React.FC = () => {
       <HelpBar
         items={[
           { key: '↑/↓', label: 'navigate' },
+          { key: '←/→', label: 'dir', show: view === 'register' },
           { key: 'Enter', label: view === 'register' ? 'select' : 'copy' },
           { key: 'Tab', label: 'switch' },
           { key: 'd', label: 'delete', show: view === 'templates' },

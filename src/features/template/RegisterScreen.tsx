@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Text, useInput } from 'ink';
+import path from 'path';
 import { SelectList } from './SelectList.js';
 import { useSetAtom } from 'jotai';
 import { viewAtom } from '../store/atoms.js';
@@ -56,13 +57,22 @@ export const RegisterScreen: React.FC = () => {
 
   const handleSelectFile = (item: { value: string }) => {
     const file = files.find(f => f.path === item.value);
-    if (!file) return;
+    if (!file || file.isDirectory) return;
 
-    if (file.isDirectory) {
+    const relativePath = computeRelativePath(projectRoot, file.path);
+    setRegisterState({ type: 'confirming', file, relativePath });
+  };
+
+  const handleGoToParent = () => {
+    if (currentDir !== '/') {
+      setCurrentDir(path.dirname(currentDir));
+    }
+  };
+
+  const handleEnterDirectory = (item: { value: string }) => {
+    const file = files.find(f => f.path === item.value);
+    if (file?.isDirectory) {
       setCurrentDir(file.path);
-    } else {
-      const relativePath = computeRelativePath(projectRoot, file.path);
-      setRegisterState({ type: 'confirming', file, relativePath });
     }
   };
 
@@ -113,6 +123,8 @@ export const RegisterScreen: React.FC = () => {
           currentDir={currentDir}
           projectRoot={projectRoot}
           onSelect={handleSelectFile}
+          onLeft={handleGoToParent}
+          onRight={handleEnterDirectory}
         />
       );
   }
@@ -124,6 +136,8 @@ type FileBrowserProps = {
   currentDir: string;
   projectRoot: string;
   onSelect: (item: { value: string }) => void;
+  onLeft: () => void;
+  onRight: (item: { value: string }) => void;
 };
 
 const FileBrowser: React.FC<FileBrowserProps> = ({
@@ -131,8 +145,12 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
   currentDir,
   projectRoot,
   onSelect,
+  onLeft,
+  onRight,
 }) => {
-  const items = files.map(f => ({
+  // .. エントリを除外（← で親に移動するため）
+  const filteredFiles = files.filter(f => f.name !== '..');
+  const items = filteredFiles.map(f => ({
     label: f.isDirectory ? `📁 ${f.name}` : `📄 ${f.name}`,
     value: f.path,
   }));
@@ -152,7 +170,13 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
         <Text dimColor>Current: {relativeCurrentDir}</Text>
       </Box>
 
-      <SelectList items={items} onSelect={onSelect} limit={15} />
+      <SelectList
+        items={items}
+        onSelect={onSelect}
+        onLeft={onLeft}
+        onRight={onRight}
+        limit={15}
+      />
     </Box>
   );
 };
