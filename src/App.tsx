@@ -37,12 +37,43 @@ export const App: React.FC = () => {
         {view === 'templates' && <TemplateList />}
         {view === 'register' && <RegisterScreen />}
       </Box>
-      <Box marginTop={1}>
-        <Text dimColor>
-          [↑/↓] Navigate [Enter] {view === 'register' ? 'Select' : 'Copy'} [Tab]
-          Switch{view === 'templates' && ' [d] Delete [Esc] Exit'}
-        </Text>
-      </Box>
+      <HelpBar
+        items={[
+          { key: '↑/↓', label: 'navigate' },
+          { key: 'Enter', label: view === 'register' ? 'select' : 'copy' },
+          { key: 'Tab', label: 'switch' },
+          { key: 'd', label: 'delete', show: view === 'templates' },
+          { key: 'Esc', label: 'exit', show: view === 'templates' },
+        ]}
+      />
+    </Box>
+  );
+};
+
+type HelpItem = {
+  key: string;
+  label: string;
+  show?: boolean;
+};
+
+type HelpBarProps = {
+  items: HelpItem[];
+};
+
+const HelpBar: React.FC<HelpBarProps> = ({ items }) => {
+  const visibleItems = items.filter(item => item.show !== false);
+
+  return (
+    <Box marginTop={1}>
+      {visibleItems.map((item, index) => (
+        <React.Fragment key={item.key}>
+          {index > 0 && <Text dimColor> • </Text>}
+          <Text>
+            <Text color="cyan">{item.key}</Text>
+            <Text dimColor> {item.label}</Text>
+          </Text>
+        </React.Fragment>
+      ))}
     </Box>
   );
 };
