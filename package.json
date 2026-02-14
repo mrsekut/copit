@@ -1,7 +1,7 @@
 {
   "name": "copit",
   "version": "1.0.2",
-  "description": "GitHub File Fetcher TUI - Download files from GitHub repositories with OAuth authentication, fuzzy search, and download history",
+  "description": "TUI tool for managing local file templates - register and copy config files to new projects",
   "module": "src/index.tsx",
   "type": "module",
   "private": false,
@@ -14,9 +14,10 @@
     "LICENSE"
   ],
   "keywords": [
-    "github",
     "cli",
-    "download"
+    "tui",
+    "template",
+    "config"
   ],
   "author": "mrsekut",
   "license": "MIT",
