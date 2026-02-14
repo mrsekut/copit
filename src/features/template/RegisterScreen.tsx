@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Text, useInput } from 'ink';
-import TextInput from 'ink-text-input';
 import { SelectList } from './SelectList.js';
 import { useSetAtom } from 'jotai';
 import { viewAtom } from '../store/atoms.js';
 import { loadLocalFiles, type FileEntry } from './file-browser.js';
 import { registerTemplate } from './storage.js';
 import { computeRelativePath } from './copy.js';
+import { FilePreview } from './FilePreview.js';
 
 type RegisterState =
   | { type: 'browsing' }
-  | { type: 'naming'; file: FileEntry; relativePath: string }
+  | { type: 'confirming'; file: FileEntry; relativePath: string }
   | { type: 'registering' }
   | { type: 'done'; message: string };
 
@@ -23,12 +23,15 @@ export const RegisterScreen: React.FC = () => {
   const [registerState, setRegisterState] = useState<RegisterState>({
     type: 'browsing',
   });
-  const [templateName, setTemplateName] = useState('');
 
   useInput((_input, key) => {
-    if (key.escape && registerState.type === 'naming') {
-      setRegisterState({ type: 'browsing' });
-      setTemplateName('');
+    if (registerState.type === 'confirming') {
+      if (key.escape) {
+        setRegisterState({ type: 'browsing' });
+      }
+      if (key.return) {
+        handleRegister();
+      }
       return;
     }
     if (key.tab && registerState.type === 'browsing') {
@@ -59,25 +62,21 @@ export const RegisterScreen: React.FC = () => {
       setCurrentDir(file.path);
     } else {
       const relativePath = computeRelativePath(projectRoot, file.path);
-      setRegisterState({ type: 'naming', file, relativePath });
-      setTemplateName(file.name);
+      setRegisterState({ type: 'confirming', file, relativePath });
     }
   };
 
   const handleRegister = async () => {
-    if (registerState.type !== 'naming' || !templateName.trim()) return;
+    if (registerState.type !== 'confirming') return;
 
+    const { file, relativePath } = registerState;
     setRegisterState({ type: 'registering' });
 
     try {
-      await registerTemplate(
-        registerState.file.path,
-        registerState.relativePath,
-        templateName.trim(),
-      );
+      await registerTemplate(file.path, relativePath, relativePath);
       setRegisterState({
         type: 'done',
-        message: `✅ Registered: ${templateName}`,
+        message: `✅ Registered: ${relativePath}`,
       });
       setTimeout(() => {
         setRegisterState({ type: 'browsing' });
@@ -96,13 +95,11 @@ export const RegisterScreen: React.FC = () => {
   }
 
   switch (registerState.type) {
-    case 'naming':
+    case 'confirming':
       return (
-        <NamingForm
+        <ConfirmScreen
+          file={registerState.file}
           relativePath={registerState.relativePath}
-          templateName={templateName}
-          onChangeName={setTemplateName}
-          onSubmit={handleRegister}
         />
       );
     case 'registering':
@@ -158,19 +155,15 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
   );
 };
 
-// 名前入力フォーム
-type NamingFormProps = {
+// 確認画面
+type ConfirmScreenProps = {
+  file: FileEntry;
   relativePath: string;
-  templateName: string;
-  onChangeName: (name: string) => void;
-  onSubmit: () => void;
 };
 
-const NamingForm: React.FC<NamingFormProps> = ({
+const ConfirmScreen: React.FC<ConfirmScreenProps> = ({
+  file,
   relativePath,
-  templateName,
-  onChangeName,
-  onSubmit,
 }) => {
   return (
     <Box flexDirection="column">
@@ -185,13 +178,11 @@ const NamingForm: React.FC<NamingFormProps> = ({
         <Text color="green">{relativePath}</Text>
       </Box>
 
-      <Box marginBottom={1}>
-        <Text>Template name: </Text>
-        <TextInput
-          value={templateName}
-          onChange={onChangeName}
-          onSubmit={onSubmit}
-        />
+      <Box marginBottom={1} flexDirection="column">
+        <Text dimColor>Preview:</Text>
+        <Box marginTop={1}>
+          <FilePreview filePath={file.path} lines={10} />
+        </Box>
       </Box>
 
       <Text dimColor>[Enter] Register [Esc] Cancel</Text>
