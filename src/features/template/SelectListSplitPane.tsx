@@ -87,10 +87,7 @@ export const SelectListSplitPane: React.FC<SelectListSplitPaneProps> = ({
         borderBottom={false}
         paddingX={1}
       >
-        <Text bold dimColor>
-          Templates
-        </Text>
-        <Box marginTop={1} flexDirection="column">
+        <Box flexDirection="column">
           {visibleItems.map((item, index) => {
             const actualIndex = windowStart + index;
             const isSelected = actualIndex === selectedIndex;
@@ -112,21 +109,16 @@ export const SelectListSplitPane: React.FC<SelectListSplitPaneProps> = ({
 
       {/* 右ペイン: プレビュー */}
       <Box flexDirection="column" width={previewWidth} paddingX={1}>
-        <Text bold dimColor>
-          Preview
-        </Text>
-        <Box marginTop={1}>
-          {currentItem?.previewPath ? (
-            <FilePreview
-              filePath={currentItem.previewPath}
-              lines={previewLines}
-              showBorder={false}
-              maxWidth={previewWidth - 2}
-            />
-          ) : (
-            <Text dimColor>No preview available</Text>
-          )}
-        </Box>
+        {currentItem?.previewPath ? (
+          <FilePreview
+            filePath={currentItem.previewPath}
+            lines={previewLines}
+            showBorder={false}
+            maxWidth={previewWidth - 2}
+          />
+        ) : (
+          <Text dimColor>No preview available</Text>
+        )}
       </Box>
     </Box>
   );
