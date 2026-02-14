@@ -23,7 +23,7 @@ export const App: React.FC = () => {
         alignItems="center"
       >
         <Text bold color="cyan">
-          copit - Template Manager
+          copit
         </Text>
         <Box flexDirection="row">
           <Text color={view === 'templates' ? 'cyan' : 'gray'}>
