@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Text, useInput } from 'ink';
 import { useSetAtom } from 'jotai';
-import { SelectList } from './SelectList.js';
+import { SelectListSplitPane } from './SelectListSplitPane.js';
 import { viewAtom } from '../store/atoms.js';
-import { loadTemplates, deleteTemplate, type Template } from './storage.js';
+import {
+  loadTemplates,
+  deleteTemplate,
+  getTemplateFilePath,
+  type Template,
+} from './storage.js';
 import { copyTemplateToDir, checkFileExists, getDestPath } from './copy.js';
 
 type ConfirmState =
@@ -85,7 +90,7 @@ export const TemplateList: React.FC = () => {
       setTemplates(templates.filter(t => t.id !== template.id));
       setConfirmState({
         type: 'done',
-        message: `🗑️ Deleted: ${template.name}`,
+        message: `🗑️ Deleted: ${template.relativePath}`,
       });
       setTimeout(() => setConfirmState({ type: 'idle' }), 2000);
     } catch (error) {
@@ -142,10 +147,7 @@ export const TemplateList: React.FC = () => {
           🗑️ Delete template
         </Text>
         <Box marginTop={1}>
-          <Text>
-            Delete &quot;{confirmState.template.name}&quot; (
-            {confirmState.template.relativePath})?
-          </Text>
+          <Text>Delete {confirmState.template.relativePath}?</Text>
         </Box>
         <Box marginTop={1}>
           <Text dimColor>[y] Yes [n] No</Text>
@@ -155,20 +157,15 @@ export const TemplateList: React.FC = () => {
   }
 
   const items = templates.map(t => ({
-    label: `📄 ${t.name} (${t.relativePath})`,
+    label: t.relativePath,
     value: t.id,
+    previewPath: getTemplateFilePath(t),
   }));
 
   return (
     <Box flexDirection="column">
-      <Box marginBottom={1}>
-        <Text bold color="cyan">
-          📋 Templates
-        </Text>
-      </Box>
-
       {items.length > 0 ? (
-        <SelectList
+        <SelectListSplitPane
           items={items}
           onSelect={handleSelect}
           onHighlight={handleHighlight}
