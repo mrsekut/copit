@@ -1,6 +1,6 @@
 {
   "name": "copit",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "TUI tool for managing local file templates - register and copy config files to new projects",
   "module": "src/index.tsx",
   "type": "module",
