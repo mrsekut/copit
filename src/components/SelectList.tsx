@@ -36,6 +36,8 @@ export const SelectList: React.FC<SelectListProps> = ({
 
   // ウィンドウのスクロール調整
   useEffect(() => {
+    if (items.length === 0) return;
+
     // カーソルがウィンドウより上にある場合
     if (selectedIndex < windowStart) {
       setWindowStart(selectedIndex);
@@ -44,7 +46,7 @@ export const SelectList: React.FC<SelectListProps> = ({
     if (selectedIndex >= windowStart + windowSize) {
       setWindowStart(selectedIndex - windowSize + 1);
     }
-  }, [selectedIndex, windowStart, windowSize]);
+  }, [selectedIndex, windowStart, windowSize, items.length]);
 
   // ハイライト通知
   useEffect(() => {

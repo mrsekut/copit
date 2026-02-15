@@ -130,6 +130,19 @@ export const RegisterScreen: React.FC = () => {
   }
 };
 
+// fuzzy match: パターンの文字が順番にテキストに含まれているか判定
+const fuzzyMatch = (pattern: string, text: string): boolean => {
+  const lowerPattern = pattern.toLowerCase();
+  const lowerText = text.toLowerCase();
+  let patternIndex = 0;
+  for (let i = 0; i < lowerText.length && patternIndex < lowerPattern.length; i++) {
+    if (lowerText[i] === lowerPattern[patternIndex]) {
+      patternIndex++;
+    }
+  }
+  return patternIndex === lowerPattern.length;
+};
+
 // ファイルブラウザ
 type FileBrowserProps = {
   files: FileEntry[];
@@ -148,8 +161,41 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
   onLeft,
   onRight,
 }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // ディレクトリ変更時に検索クエリをリセット
+  useEffect(() => {
+    setSearchQuery('');
+  }, [currentDir]);
+
+  // 検索入力のハンドリング
+  useInput((input, key) => {
+    // Escで検索クリア
+    if (key.escape) {
+      setSearchQuery('');
+      return;
+    }
+
+    // バックスペース
+    if (key.backspace || key.delete) {
+      setSearchQuery(prev => prev.slice(0, -1));
+      return;
+    }
+
+    // 通常の文字入力（制御キー以外）
+    if (input && !key.ctrl && !key.meta && !key.return && !key.upArrow && !key.downArrow && !key.leftArrow && !key.rightArrow && !key.tab) {
+      setSearchQuery(prev => prev + input);
+    }
+  });
+
   // .. エントリを除外（← で親に移動するため）
-  const filteredFiles = files.filter(f => f.name !== '..');
+  const baseFiles = files.filter(f => f.name !== '..');
+
+  // 検索クエリでフィルタリング
+  const filteredFiles = searchQuery
+    ? baseFiles.filter(f => fuzzyMatch(searchQuery, f.name))
+    : baseFiles;
+
   const items = filteredFiles.map(f => ({
     label: f.isDirectory ? `📁 ${f.name}` : `📄 ${f.name}`,
     value: f.path,
@@ -170,6 +216,13 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
 
       <Box marginBottom={1}>
         <Text dimColor>Current: {relativeCurrentDir}</Text>
+      </Box>
+
+      {/* 検索バー */}
+      <Box marginBottom={1}>
+        <Text color="yellow">🔍 </Text>
+        <Text>{searchQuery}</Text>
+        <Text color="gray">▌</Text>
       </Box>
 
       <SelectList
