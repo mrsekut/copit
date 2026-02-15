@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Text, useInput } from 'ink';
 import path from 'path';
-import { SelectList } from './SelectList.js';
+import { SelectList } from '../../components/SelectList.js';
 import { useSetAtom } from 'jotai';
 import { viewAtom } from '../store/atoms.js';
 import { loadLocalFiles, type FileEntry } from './file-browser.js';
@@ -156,7 +156,9 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
   }));
 
   const relativeCurrentDir =
-    currentDir === projectRoot ? '.' : computeRelativePath(projectRoot, currentDir);
+    currentDir === projectRoot
+      ? '.'
+      : computeRelativePath(projectRoot, currentDir);
 
   return (
     <Box flexDirection="column">
