@@ -30,7 +30,7 @@ copit
 1. **Register a template**
    - Press `Tab` to switch to Register screen
    - Navigate to the file you want to register
-   - Press `Enter` to select, then enter a template name
+   - Press `Enter` to select and register
 
 2. **Use a template**
    - Select a template from the list
