@@ -5,7 +5,9 @@ import { FilePreview } from './FilePreview.js';
 type Item = {
   label: string;
   value: string;
-  previewPath?: string;
+  previewPath?: string | undefined;
+  registeredAt?: string | undefined;
+  registeredFrom?: string | undefined;
 };
 
 type SelectListSplitPaneProps = {
@@ -107,8 +109,23 @@ export const SelectListSplitPane: React.FC<SelectListSplitPaneProps> = ({
         </Box>
       </Box>
 
-      {/* 右ペイン: プレビュー */}
+      {/* 右ペイン: メタデータ + プレビュー */}
       <Box flexDirection="column" width={previewWidth} paddingX={1}>
+        {/* メタデータ表示 */}
+        {currentItem &&
+          (currentItem.registeredAt || currentItem.registeredFrom) && (
+            <Box flexDirection="column" marginBottom={1}>
+              {currentItem.registeredAt && (
+                <Text dimColor>
+                  {new Date(currentItem.registeredAt).toLocaleString('ja-JP')}
+                </Text>
+              )}
+              {currentItem.registeredFrom && (
+                <Text dimColor>{currentItem.registeredFrom}</Text>
+              )}
+            </Box>
+          )}
+        {/* ファイルプレビュー */}
         {currentItem?.previewPath ? (
           <FilePreview
             filePath={currentItem.previewPath}

@@ -11,6 +11,7 @@ export type Template = {
   name: string;
   relativePath: string;
   registeredAt: string;
+  registeredFrom?: string; // 登録元リポジトリのパス
 };
 
 const ensureConfigDir = async (): Promise<void> => {
@@ -60,6 +61,7 @@ export const registerTemplate = async (
     name,
     relativePath,
     registeredAt: new Date().toISOString(),
+    registeredFrom: process.cwd(),
   };
 
   const templates = await loadTemplates();

@@ -160,6 +160,8 @@ export const TemplateList: React.FC = () => {
     label: t.relativePath,
     value: t.id,
     previewPath: getTemplateFilePath(t),
+    registeredAt: t.registeredAt,
+    registeredFrom: t.registeredFrom,
   }));
 
   return (
