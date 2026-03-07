@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Text, useInput } from 'ink';
 import { useAtomValue } from 'jotai';
-import { viewAtom } from './features/store/atoms.js';
+import { View, viewAtom } from './features/store/atoms.js';
 import { TemplateList } from './features/template/TemplateList.js';
 import { RegisterScreen } from './features/template/RegisterScreen.js';
 
@@ -37,25 +37,35 @@ export const App: React.FC = () => {
         {view === 'templates' && <TemplateList />}
         {view === 'register' && <RegisterScreen />}
       </Box>
-      <HelpBar
-        items={[
-          { key: '↑/↓', label: 'navigate' },
-          { key: '←/→', label: 'dir', show: view === 'register' },
-          { key: 'Enter', label: view === 'register' ? 'select' : 'copy' },
-          { key: 'Tab', label: 'switch' },
-          { key: 'c', label: 'clipboard', show: view === 'templates' },
-          { key: 'd', label: 'delete', show: view === 'templates' },
-          { key: 'Esc', label: 'exit', show: view === 'templates' },
-        ]}
-      />
+      <HelpBar items={helpItems(view)} />
     </Box>
   );
+};
+
+const helpItems = (view: View) => {
+  switch (view) {
+    case 'templates':
+      return [
+        { key: '↑/↓', label: 'navigate' },
+        { key: 'Enter', label: 'copy' },
+        { key: 'Tab', label: 'switch' },
+        { key: 'c', label: 'clipboard' },
+        { key: 'd', label: 'delete' },
+        { key: 'Esc', label: 'exit' },
+      ];
+    case 'register':
+      return [
+        { key: '↑/↓', label: 'navigate' },
+        { key: '←/→', label: 'dir' },
+        { key: 'Enter', label: 'select' },
+        { key: 'Tab', label: 'switch' },
+      ];
+  }
 };
 
 type HelpItem = {
   key: string;
   label: string;
-  show?: boolean;
 };
 
 type HelpBarProps = {
@@ -63,11 +73,9 @@ type HelpBarProps = {
 };
 
 const HelpBar: React.FC<HelpBarProps> = ({ items }) => {
-  const visibleItems = items.filter(item => item.show !== false);
-
   return (
     <Box marginTop={1}>
-      {visibleItems.map((item, index) => (
+      {items.map((item, index) => (
         <React.Fragment key={item.key}>
           {index > 0 && <Text dimColor> • </Text>}
           <Text>
