@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import path from 'path';
+import { spawn } from 'child_process';
 import { getTemplateFilePath, type Template } from './storage.js';
 
 export const computeRelativePath = (cwd: string, filePath: string): string => {
@@ -33,4 +34,21 @@ export const copyTemplateToDir = async (
 
 export const getDestPath = (destDir: string, relativePath: string): string => {
   return path.join(destDir, relativePath);
+};
+
+export const copyTemplateToClipboard = async (
+  template: Template,
+): Promise<void> => {
+  const sourcePath = getTemplateFilePath(template);
+  const content = await fs.readFile(sourcePath, 'utf-8');
+
+  return new Promise((resolve, reject) => {
+    const proc = spawn('pbcopy');
+    proc.stdin.write(content);
+    proc.stdin.end();
+    proc.on('close', code => {
+      if (code === 0) resolve();
+      else reject(new Error(`pbcopy exited with code ${code}`));
+    });
+  });
 };

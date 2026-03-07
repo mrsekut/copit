@@ -9,7 +9,12 @@ import {
   getTemplateFilePath,
   type Template,
 } from './storage.js';
-import { copyTemplateToDir, checkFileExists, getDestPath } from './copy.js';
+import {
+  copyTemplateToDir,
+  copyTemplateToClipboard,
+  checkFileExists,
+  getDestPath,
+} from './copy.js';
 
 type ConfirmState =
   | { type: 'idle' }
@@ -56,6 +61,13 @@ export const TemplateList: React.FC = () => {
         setConfirmState({ type: 'confirmingDelete', template });
       }
     }
+
+    if (input === 'c' && highlightedId) {
+      const template = templates.find(t => t.id === highlightedId);
+      if (template) {
+        handleCopyToClipboard(template);
+      }
+    }
   });
 
   useEffect(() => {
@@ -91,6 +103,21 @@ export const TemplateList: React.FC = () => {
       setConfirmState({
         type: 'done',
         message: `🗑️ Deleted: ${template.relativePath}`,
+      });
+      setTimeout(() => setConfirmState({ type: 'idle' }), 2000);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      setConfirmState({ type: 'done', message: `❌ Failed: ${message}` });
+      setTimeout(() => setConfirmState({ type: 'idle' }), 3000);
+    }
+  };
+
+  const handleCopyToClipboard = async (template: Template) => {
+    try {
+      await copyTemplateToClipboard(template);
+      setConfirmState({
+        type: 'done',
+        message: `📋 Copied to clipboard: ${template.relativePath}`,
       });
       setTimeout(() => setConfirmState({ type: 'idle' }), 2000);
     } catch (error) {

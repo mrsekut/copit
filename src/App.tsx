@@ -43,6 +43,7 @@ export const App: React.FC = () => {
           { key: '←/→', label: 'dir', show: view === 'register' },
           { key: 'Enter', label: view === 'register' ? 'select' : 'copy' },
           { key: 'Tab', label: 'switch' },
+          { key: 'c', label: 'clipboard', show: view === 'templates' },
           { key: 'd', label: 'delete', show: view === 'templates' },
           { key: 'Esc', label: 'exit', show: view === 'templates' },
         ]}
